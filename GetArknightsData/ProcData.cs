@@ -31,8 +31,7 @@ namespace GetArknightsData
             Dictionary<string, int> dic = new(dic1);
             foreach (var item in dic2)
             {
-                if (!dic.ContainsKey(item.Key))
-                    dic.Add(item.Key, 0);
+                if (!dic.ContainsKey(item.Key)) dic.Add(item.Key, 0);
                 dic[item.Key] = op(dic[item.Key], item.Value);
             }
             return dic;
@@ -42,8 +41,7 @@ namespace GetArknightsData
         {
             foreach (var item in dic2)
             {
-                if (!dic1.ContainsKey(item.Key))
-                    dic1.Add(item.Key, 0);
+                if (!dic1.ContainsKey(item.Key)) dic1.Add(item.Key, 0);
                 dic1[item.Key] = op(dic1[item.Key], item.Value);
             }
             return dic1;
@@ -51,8 +49,7 @@ namespace GetArknightsData
         static public void DicSelfOperator(Dictionary<string, int> dic, string key, int value,
             Func<int, int, int> op)
         {
-            if (!dic.ContainsKey(key))
-                dic.Add(key, value);
+            if (!dic.ContainsKey(key)) dic.Add(key, 0);
             dic[key] = op(dic[key], value);
         }
         /// <summary>

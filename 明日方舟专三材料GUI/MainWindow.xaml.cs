@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -62,7 +63,9 @@ namespace 明日方舟专三材料GUI
         private async void Inquare_Button_Click(object sender, RoutedEventArgs e)
         {
             OperatorSkillData = await GetDataFromWiki.GetSpecializationDataAsync(OperatorNmae_ComboBox.Text);
-            var data = OperatorSkillData.skills[Skill_ComboBox.SelectedIndex];
+            SkillLevel? data;
+            try { data = OperatorSkillData?.skills[Skill_ComboBox.SelectedIndex]; }
+            catch (IndexOutOfRangeException) { ShowData(null); return; }
             var res = await Task.Run(() => Proc_Inquare_Async(data));
             ShowData(res);
         }
@@ -71,9 +74,13 @@ namespace 明日方舟专三材料GUI
             if (Pc == null) return null;
             return Pc.CalLack_Rarity2(Pc.SkillLevelToDic(data));
         }
-        private void Skill_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void Skill_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //ShowData();
+            SkillLevel? data;
+            try { data = OperatorSkillData?.skills[Skill_ComboBox.SelectedIndex]; }
+            catch (IndexOutOfRangeException) { ShowData(null); return; }
+            var res = await Task.Run(() => Proc_Inquare_Async(data));
+            ShowData(res);
         }
 
         private async void Update_Button_Click(object sender, RoutedEventArgs e)
@@ -86,6 +93,12 @@ namespace 明日方舟专三材料GUI
 
         private void ShowData((List<KeyValuePair<string, int>>, Dictionary<string, int>)? res)
         {
+            if (res == null)
+            {
+                DataGrid_syn.ItemsSource = null;
+                DataGrid_lack.ItemsSource = null;
+                return;
+            }
             DataGrid_syn.ItemsSource = res.Value.Item1;
             DataGrid_lack.ItemsSource = res.Value.Item2;
         }
