@@ -72,14 +72,8 @@
             </Grid>
 
             <UniformGrid Rows="1" Columns="2" Grid.Row="2" Grid.Column="0">
-                <DataGrid x:Name="DataGrid_syn" FontSize="16">
-                    <DataGrid.Columns>
-                    </DataGrid.Columns>
-                </DataGrid>
-                <DataGrid x:Name="DataGrid_lack" FontSize="16">
-                    <DataGrid.Columns>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <DataGrid x:Name="DataGrid_syn" FontSize="16" CanUserSortColumns="False"/>
+                <DataGrid x:Name="DataGrid_lack" FontSize="16"/>
             </UniformGrid>
         </Grid>
     </Grid>
