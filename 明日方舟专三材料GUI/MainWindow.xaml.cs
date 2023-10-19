@@ -58,6 +58,8 @@ namespace 明日方舟专三材料GUI
             }
             else OperatorNmae_ComboBox.ItemsSource = OperatorList;
             OperatorNmae_ComboBox.IsDropDownOpen = true;
+            OperatorSkillData = null;
+            ShowData(null);
         }
 
         private async void Inquare_Button_Click(object sender, RoutedEventArgs e)
@@ -72,6 +74,7 @@ namespace 明日方舟专三材料GUI
         private (List<KeyValuePair<string, int>>, Dictionary<string, int>)? Proc_Inquare_Async(SkillLevel? data)
         {
             if (Pc == null) return null;
+            if (data == null) return null;
             return Pc.CalLack_Rarity2(Pc.SkillLevelToDic(data));
         }
         private async void Skill_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

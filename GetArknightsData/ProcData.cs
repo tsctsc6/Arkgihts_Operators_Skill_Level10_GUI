@@ -213,6 +213,8 @@ namespace GetArknightsData
                     dicLack2.Add(item.Key, -item.Value);
             List<KeyValuePair<string, int>> list = dicSynthesisPath.ToList();
             list.Sort(new KeyValuePair_string_int_Comp(ResourceDictionary));
+
+            if (dicLack2.Count == 0) dicLack2.Add("无", 0);
             return (list, dicLack2);
         }
         public void CalLack_Rarity2(Dictionary<string, int> LackDirectDepot,
