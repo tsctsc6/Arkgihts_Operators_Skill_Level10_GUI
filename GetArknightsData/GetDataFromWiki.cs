@@ -14,23 +14,24 @@ namespace GetArknightsData
     {
         static readonly string host = "https://prts.wiki/w/";
         static readonly HttpClient client = new();
+        public const string ResourceDataPath = @".\Data\材料名单.json";
+        public const string OperatorListPath = @".\Data\干员名单.json";
         static public void Init()
         {
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.76");
         }
-        static public void GetResourceData()
+        static async public Task<ResourceInfoCollection> GetResourceDataAsync()
         {
-            Task<string> htmlText = GetHtmlText("道具一览");
-            htmlText.Wait();
-            string[][] resourceNames = ProcHTML_GetResourceData(htmlText.Result);
+            string htmlText = await GetHtmlText("道具一览");
+            string[][] resourceNames = ProcHTML_GetResourceData(htmlText);
             //Console.WriteLine();
             int i = 2;
             List<ResourceInfo> resources = new();
             foreach (var rns in resourceNames)
             {
                 var htmls = rns.Select(rn => GetHtmlText(rn)).ToArray();
-                Task.WaitAll(htmls);
+                await Task.WhenAll(htmls);
                 var res = htmls.Select(html => ProcHTML_GetResourceData2(html.Result, i)).ToList();
                 resources = resources.Concat(res).ToList();
                 /*
@@ -55,7 +56,8 @@ namespace GetArknightsData
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
             });
-            File.WriteAllText(@".\Data\材料名单.json", jsonString);
+            await File.WriteAllTextAsync(ResourceDataPath, jsonString);
+            return rc;
         }
         /// <summary>
         /// 获取网页html
@@ -154,17 +156,15 @@ namespace GetArknightsData
             */
             return resource;
         }
-        static public void GetOperatorList()
+        static async public Task<OperatorCollection> GetOperatorListAsync()
         {
-            Task<string> t = GetHtmlText("干员一览");
-            t.Wait();
-            ProcHTML_GetOperatorList(t.Result);
+            return ProcHTML_GetOperatorList(await GetHtmlText("干员一览"));
         }
         /// <summary>
         /// 获取干员名单
         /// </summary>
         /// <param name="htmlText"></param>
-        static void ProcHTML_GetOperatorList(in string htmlText)
+        static OperatorCollection ProcHTML_GetOperatorList(in string htmlText)
         {
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(htmlText);
@@ -186,14 +186,12 @@ namespace GetArknightsData
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
             });
-            File.WriteAllText(@".\Data\干员名单.json", jsonString);
+            File.WriteAllText(OperatorListPath, jsonString);
+            return oc;
         }
-        static public OperatorSkill GetSpecializationData(string name)
+        static async public Task<OperatorSkill> GetSpecializationDataAsync(string name)
         {
-            OperatorSkill operatorSkill = new OperatorSkill(name);
-            Task<string> t = GetHtmlText(name);
-            t.Wait();
-            return ProcHtml_GetSpecializationData(t.Result, name);
+            return ProcHtml_GetSpecializationData(await GetHtmlText(name), name);
         }
         static OperatorSkill ProcHtml_GetSpecializationData(in string htmlText, string name)
         {

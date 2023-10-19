@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ScottPlot.WPF" Version="4.1.67" />
+    <PackageReference Include="ScottPlot.WPF" Version="4.1.68" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GetArknightsData\GetArknightsData.csproj" />
   </ItemGroup>
 
 </Project>
