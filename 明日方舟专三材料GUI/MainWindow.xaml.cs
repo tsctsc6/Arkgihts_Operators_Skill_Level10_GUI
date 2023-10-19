@@ -26,7 +26,7 @@ namespace 明日方舟专三材料GUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        static internal Dictionary<string, ResourceInfo>? ResourceDictionary = null;
+        static internal ProcData? Pc = null;
         static internal List<string>? OperatorList = null;
         static internal OperatorSkill? OperatorSkillData;
         const string depot_res_Path = @".\Data\depot_res.json";
@@ -35,9 +35,9 @@ namespace 明日方舟专三材料GUI
             InitializeComponent();
             try
             {
-                ResourceDictionary = ProcData.GetResourceDictionary(
-                    JsonSerializer.Deserialize<ResourceInfoCollection>
+                Pc = new ProcData(JsonSerializer.Deserialize<ResourceInfoCollection>
                     (File.ReadAllText(GetDataFromWiki.ResourceDataPath)));
+                Pc.LoadDepot(depot_res_Path);
                 OperatorList = JsonSerializer.Deserialize<OperatorCollection>
                     (File.ReadAllText(GetDataFromWiki.OperatorListPath))?.Names.ToList();
                 Label_Time.Content = File.GetLastWriteTime(depot_res_Path).ToString();
@@ -62,58 +62,32 @@ namespace 明日方舟专三材料GUI
         private async void Inquare_Button_Click(object sender, RoutedEventArgs e)
         {
             OperatorSkillData = await GetDataFromWiki.GetSpecializationDataAsync(OperatorNmae_ComboBox.Text);
-            await Task.Run(() => Proc_Inquare_Async(OperatorSkillData.skills[Skill_ComboBox.SelectedIndex]));
-            ShowData();
+            var data = OperatorSkillData.skills[Skill_ComboBox.SelectedIndex];
+            var res = await Task.Run(() => Proc_Inquare_Async(data));
+            ShowData(res);
         }
-        private void Proc_Inquare_Async(SkillLevel? data)
+        private (List<KeyValuePair<string, int>>, Dictionary<string, int>)? Proc_Inquare_Async(SkillLevel? data)
         {
-            
+            if (Pc == null) return null;
+            return Pc.CalLack_Rarity2(Pc.SkillLevelToDic(data));
         }
         private void Skill_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ShowData();
+            //ShowData();
         }
 
         private async void Update_Button_Click(object sender, RoutedEventArgs e)
         {
-            ResourceDictionary = ProcData.GetResourceDictionary(await GetDataFromWiki.GetResourceDataAsync());
+            Pc = new ProcData(await GetDataFromWiki.GetResourceDataAsync());
             OperatorList = (await GetDataFromWiki.GetOperatorListAsync()).Names.ToList();
             OperatorNmae_ComboBox.ItemsSource = OperatorList;
             MessageBox.Show("更新完成", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void ShowData()
+        private void ShowData((List<KeyValuePair<string, int>>, Dictionary<string, int>)? res)
         {
-            int SkillIndex = 0;
-            Graph.Plot.Clear();
-            Graph.Render(true);
-            DataGrid_syn.ItemsSource = null;
-            DataGrid_lack.ItemsSource = null;
-            SkillIndex = Skill_ComboBox.SelectedIndex;
-            if (OperatorSkillData?.skills[SkillIndex] == null) return;
-            Dictionary<string, int> res = OperatorSkillData.skills[SkillIndex].Statistics();
-            double[] MatNum = new double[res.Count];
-            int i = 0;
-            foreach (var kv in res)
-            {
-                MatNum[i] = kv.Value;
-                i++;
-            }
-            var bar = Graph.Plot.AddBar(MatNum);
-            bar.ShowValuesAboveBars = true;
-            bar.Font.Bold = true;
-            bar.Font.Size = 18;
-
-            List<KeyValuePair<string, int>>? res_syn;
-            List<KeyValuePair<string, int>>? res_lack;
-            myDepot.Cal(skillData, SkillIndex, out res_syn, out res_lack);
-            List<string> syn_name = new List<string>();
-            List<int> syn_num = new List<int>();
-
-            Graph.Plot.SetAxisLimits(yMin: 0);
-            Graph.Render(true);
-            DataGrid_syn.ItemsSource = res_syn;
-            DataGrid_lack.ItemsSource = res_lack;
+            DataGrid_syn.ItemsSource = res.Value.Item1;
+            DataGrid_lack.ItemsSource = res.Value.Item2;
         }
 
         private void OpenFile_Button_Click(object sender, RoutedEventArgs e)

@@ -9,20 +9,16 @@ namespace GetArknightsData
 {
     public class ProcData
     {
-        static private Dictionary<string, ResourceInfo>? ResourceDictionary;
-        static private Dictionary<string, int>? depot;
-        static public void CalSynthesisTable()
+        private Dictionary<string, ResourceInfo>? ResourceDictionary;
+        private Dictionary<string, int>? depot;
+        public ProcData(ResourceInfoCollection? rc = null)
         {
-            ResourceDictionary = new();
-            List<string>[] ResourceNameByRarity_List = new List<string>[]
-                { new List<string>(), new List<string>(), new List<string>() };
-            string json = "";
-            try
+            if (rc == null)
             {
-                json = File.ReadAllText(@".\Data\材料名单.json");
+                ResourceDictionary = null;
+                return;
             }
-            catch(FileNotFoundException) { return; }
-            var rc = JsonSerializer.Deserialize<ResourceInfoCollection>(json);
+            ResourceDictionary = new();
             foreach(var item in rc.resources)
             {
                 ResourceDictionary.Add(item.name, item);
@@ -52,17 +48,23 @@ namespace GetArknightsData
             }
             return dic1;
         }
+        static public void DicSelfOperator(Dictionary<string, int> dic, string key, int value,
+            Func<int, int, int> op)
+        {
+            if (!dic.ContainsKey(key))
+                dic.Add(key, value);
+            dic[key] = op(dic[key], value);
+        }
         /// <summary>
         /// 获得材料的合成所需
         /// </summary>
-        /// <param name="ResourceDictionary">材料合成表</param>
+        /// <param name="ResourceDictionary">材料字典</param>
         /// <param name="name">材料名称</param>
         /// <param name="num">数量</param>
         /// <param name="targetrRrity">要计算到的稀有度</param>
         /// <returns>结果</returns>
-        static public Dictionary<string, int> CalSynthesis(string name, int num, int targetrRrity)
+        public Dictionary<string, int> CalSynthesis(string name, int num, int targetrRrity)
         {
-            if (ResourceDictionary == null) { throw new ArgumentNullException("ResourceDictionary is null"); }
             Dictionary<string, int> dic = new();
             if (CalSynthesis(name, num, targetrRrity, dic))
                 return dic;
@@ -71,7 +73,7 @@ namespace GetArknightsData
         /// <summary>
         /// 用于递归
         /// </summary>
-        /// <param name="ResourceDictionary">材料合成表</param>
+        /// <param name="ResourceDictionary">材料字典</param>
         /// <param name="name">材料名称</param>
         /// <param name="num">数量</param>
         /// <param name="targetrRrity">要计算到的稀有度</param>
@@ -80,7 +82,7 @@ namespace GetArknightsData
         /// false: 计算过程中出现找不到某种材料
         /// true: 计算过程正常
         /// </returns>
-        static private bool CalSynthesis(string name, int num, int targetrRrity, Dictionary<string, int> dic)
+        private bool CalSynthesis(string name, int num, int targetrRrity, Dictionary<string, int> dic)
         {
             ResourceInfo? resourceInfo;
             try { resourceInfo = ResourceDictionary[name]; }
@@ -95,8 +97,8 @@ namespace GetArknightsData
             }
             if (resourceInfo.rarity == targetrRrity + 1)
             {
-                if (resourceInfo.synthesisItems.Length == 0) return true;
-                foreach (var si in resourceInfo.synthesisItems)
+                if (resourceInfo.synthesisItem.Length == 0) return true;
+                foreach (var si in resourceInfo.synthesisItem)
                 {
                     if (!dic.ContainsKey(si.name))
                         dic.Add(si.name, si.count * num);
@@ -107,7 +109,7 @@ namespace GetArknightsData
             }
             if (resourceInfo.rarity > targetrRrity + 1)
             {
-                foreach (var si in resourceInfo.synthesisItems)
+                foreach (var si in resourceInfo.synthesisItem)
                     if (!CalSynthesis(si.name, si.count * num, targetrRrity, dic))
                         return false;
                 return true;
@@ -115,12 +117,12 @@ namespace GetArknightsData
             return false;
         }
         /// <summary>
-        /// 计算一个技能等级专三材料
+        /// 计算一个技能升一级的材料
         /// </summary>
         /// <param name="skillResource"></param>
         /// <param name="targetrRrity"></param>
         /// <returns></returns>
-        static public Dictionary<string, int> CalSkillResource(SkillResource skillResource, int targetrRrity)
+        public Dictionary<string, int> CalSkillResource(SkillResource skillResource, int targetrRrity)
         {
             Dictionary<string, int> dic = new();
             foreach (var r in skillResource.resources)
@@ -135,7 +137,7 @@ namespace GetArknightsData
         /// <param name="skillLevel"></param>
         /// <param name="targetrRrity"></param>
         /// <returns></returns>
-        static public Dictionary<string, int> CalSkillLevel(SkillLevel skillLevel, int targetrRrity)
+        public Dictionary<string, int> CalSkillLevel(SkillLevel skillLevel, int targetrRrity)
         {
             Dictionary<string, int> dic = new();
             foreach (var r in skillLevel.skillResources)
@@ -144,14 +146,26 @@ namespace GetArknightsData
             }
             return dic;
         }
-        static public void LoadDepot()
+        public Dictionary<string, int> SkillLevelToDic(SkillLevel skillLevel)
+        {
+            Dictionary<string, int> dic = new();
+            foreach (var r in skillLevel.skillResources)
+            {
+                foreach (var rr in r.resources)
+                {
+                    DicSelfOperator(dic, rr.name, rr.count, (x, y) => x + y);
+                }
+            }
+            return dic;
+        }
+        public void LoadDepot(string path)
         {
             if (ResourceDictionary == null) { throw new ArgumentNullException("ResourceDictionary is null"); }
             depot = new();
             string json = "";
             try
             {
-                json = File.ReadAllText(@".\Data\depot_res.json");
+                json = File.ReadAllText(path);
             }
             catch (FileNotFoundException) { return; }
             var d = JsonSerializer.Deserialize<Depot>(json);
@@ -165,7 +179,7 @@ namespace GetArknightsData
         /// </summary>
         /// <param name="skillData"></param>
         /// <returns>直接欠缺的材料</returns>
-        static public Dictionary<string, int> CalLackDirectDepot(Dictionary<string, int> skillData)
+        public Dictionary<string, int> CalLackDirectDepot(Dictionary<string, int> skillData)
         {
             if (depot == null) return new();
             return DicOperator(depot, skillData, (x, y) => x - y);
@@ -175,7 +189,7 @@ namespace GetArknightsData
         /// </summary>
         /// <param name="LackDirectDepot"></param>
         /// <returns></returns>
-        static public List<KeyValuePair<string, int>> CalNeedSynthesis(Dictionary<string, int> LackDirectDepot)
+        public List<KeyValuePair<string, int>> CalNeedSynthesis(Dictionary<string, int> LackDirectDepot)
         {
             List<KeyValuePair<string, int>> list = new();
             foreach (var item in LackDirectDepot)
@@ -189,7 +203,7 @@ namespace GetArknightsData
         /// </summary>
         /// <param name="skillData"></param>
         /// <returns>(总计需要合成的材料，总体欠缺的2级材料)</returns>
-        static public (List<KeyValuePair<string, int>>, Dictionary<string, int>)
+        public (List<KeyValuePair<string, int>>, Dictionary<string, int>)
             CalLack_Rarity2(Dictionary<string, int> skillData)
         {
             if (depot == null) return new();
@@ -204,7 +218,7 @@ namespace GetArknightsData
             list.Sort(new KeyValuePair_string_int_Comp(ResourceDictionary));
             return (list, dicLack2);
         }
-        static public void CalLack_Rarity2(Dictionary<string, int> LackDirectDepot,
+        public void CalLack_Rarity2(Dictionary<string, int> LackDirectDepot,
             Dictionary<string, int> dicSynthesisPath,
             int currentRrity, int targetrRrity)
         {
