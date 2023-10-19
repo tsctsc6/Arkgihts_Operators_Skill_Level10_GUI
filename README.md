@@ -9,6 +9,7 @@
 * 仓库材料库存的文件，指定为“./Data/depot_res.json”，可以通过[MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights)的“小工具”->“仓库识别”，“导出至企鹅物流刷图规划”，粘贴到“./Data/depot_res.json”中；也可以在本项目GUI中“以记事本打开仓库文件”，粘贴。
 * 左边的表格，为需要合成的材料，按稀有度升序排列；其中的材料数量包括了后面更高级材料的合成所需材料数。
 * 右边的表格，为欠缺的蓝材料（2级材料）数。
+* 初次运行时，会有“找不到文件”的异常，点击“更新数据”按钮即可
 ## 开发框架
 * C# .net core 6.0
 * WPF
