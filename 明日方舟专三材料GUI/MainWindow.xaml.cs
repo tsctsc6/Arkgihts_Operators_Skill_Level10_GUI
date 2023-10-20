@@ -114,6 +114,7 @@ namespace 明日方舟专三材料GUI
             subp.Start();
             subp.WaitForExit();
             Label_Time.Content = File.GetLastWriteTime(depot_res_Path).ToString();
+            Pc?.LoadDepot(depot_res_Path);
         }
     }
 }
