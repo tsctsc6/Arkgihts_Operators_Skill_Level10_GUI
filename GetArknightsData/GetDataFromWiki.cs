@@ -158,13 +158,13 @@ namespace GetArknightsData
         }
         static async public Task<OperatorCollection> GetOperatorListAsync()
         {
-            return ProcHTML_GetOperatorList(await GetHtmlText("干员一览"));
+            return await ProcHTML_GetOperatorList(await GetHtmlText("干员一览"));
         }
         /// <summary>
         /// 获取干员名单
         /// </summary>
         /// <param name="htmlText"></param>
-        static OperatorCollection ProcHTML_GetOperatorList(in string htmlText)
+        static async Task<OperatorCollection> ProcHTML_GetOperatorList(string htmlText)
         {
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(htmlText);
@@ -186,7 +186,7 @@ namespace GetArknightsData
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
             });
-            File.WriteAllText(OperatorListPath, jsonString);
+            await File.WriteAllTextAsync(OperatorListPath, jsonString);
             return oc;
         }
         static async public Task<OperatorSkill> GetSpecializationDataAsync(string name)
