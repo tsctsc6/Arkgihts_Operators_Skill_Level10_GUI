@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:明日方舟专三材料GUI"
         xmlns:System="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="明日方舟专三材料GUI" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
