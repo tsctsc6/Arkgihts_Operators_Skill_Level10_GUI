@@ -64,6 +64,7 @@ namespace 明日方舟专三材料GUI
 
         private async void Inquare_Button_Click(object sender, RoutedEventArgs e)
         {
+            State_Label.Content = "Running";
             OperatorSkillData = await GetDataFromWiki.GetSpecializationDataAsync(OperatorNmae_ComboBox.Text);
             SkillLevel? data;
             try { data = OperatorSkillData?.skills[Skill_ComboBox.SelectedIndex]; }
@@ -88,10 +89,12 @@ namespace 明日方舟专三材料GUI
 
         private async void Update_Button_Click(object sender, RoutedEventArgs e)
         {
+            State_Label.Content = "Running";
             Pc = new ProcData(await GetDataFromWiki.GetResourceDataAsync());
             OperatorList = (await GetDataFromWiki.GetOperatorListAsync()).Names.ToList();
             OperatorNmae_ComboBox.ItemsSource = OperatorList;
             MessageBox.Show("更新完成", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            State_Label.Content = "Done";
         }
 
         private void ShowData((List<KeyValuePair<string, int>>, Dictionary<string, int>)? res)
@@ -100,10 +103,12 @@ namespace 明日方舟专三材料GUI
             {
                 DataGrid_syn.ItemsSource = null;
                 DataGrid_lack.ItemsSource = null;
+                State_Label.Content = "Done";
                 return;
             }
             DataGrid_syn.ItemsSource = res.Value.Item1;
             DataGrid_lack.ItemsSource = res.Value.Item2;
+            State_Label.Content = "Done";
         }
 
         private void OpenFile_Button_Click(object sender, RoutedEventArgs e)

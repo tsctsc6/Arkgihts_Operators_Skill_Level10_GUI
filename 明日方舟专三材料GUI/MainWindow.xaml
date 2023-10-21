@@ -24,6 +24,7 @@
                 <ColumnDefinition Width="auto" MinWidth="70"></ColumnDefinition>
                 <ColumnDefinition Width="auto" MinWidth="100"></ColumnDefinition>
                 <ColumnDefinition Width="auto" MinWidth="100"></ColumnDefinition>
+                <ColumnDefinition Width="auto" MinWidth="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <ComboBox x:Name="OperatorNmae_ComboBox" Grid.Column="0" Margin="10" IsEditable="True" SelectedIndex="-1" IsTextSearchEnabled="False" TextBoxBase.TextChanged="OperatorNmae_ComboBox_TextChanged" IsSynchronizedWithCurrentItem="False"/>
             <Button x:Name="Inquare_Button" Grid.Column="1" Margin="10" Content="查询" Click="Inquare_Button_Click"/>
@@ -33,6 +34,7 @@
                 <System:String>第三技能</System:String>
             </ComboBox>
             <Button x:Name="Update_Button" Grid.Column="3" Margin="10" Content="更新数据" Click="Update_Button_Click"/>
+            <Label x:Name="State_Label" Grid.Column="4" Margin="10" Content="Done"/>
         </Grid>
         <Grid Background="#FFE5E5E5" Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
