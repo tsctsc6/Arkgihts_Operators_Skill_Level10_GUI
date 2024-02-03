@@ -28,26 +28,34 @@ namespace GetArknightsData
             //Console.WriteLine();
             int i = 2;
             List<ResourceInfo> resources = new();
+            do
+            {
+                int j = 0;
+                string[] resourceName = resourceNames[i - 2];
+                string? html = null;
+                do
+                {
+                    Task<string>? t = null;
+                    if (j == 0) html = await GetHtmlText(resourceName[j]);
+                    if (j < resourceName.Length - 1) t = GetHtmlText(resourceName[j + 1]);
+                    var res = ProcHTML_GetResourceData2(html, i);
+                    if (t != null) html = await t;
+                    resources.Add(res);
+                    j++;
+                } while (j < resourceName.Length);
+                i++;
+            } while (i < 5);
+            /*
             foreach (var rns in resourceNames)
             {
                 var htmls = rns.Select(rn => GetHtmlText(rn)).ToArray();
                 await Task.WhenAll(htmls);
                 var res = htmls.Select(html => ProcHTML_GetResourceData2(html.Result, i)).ToList();
-                resources = resources.Concat(res).ToList();
-                /*
-                foreach (var rn in rns)
-                {
-                    Task<string> htmlText2 = GetHtmlText(rn);
-                    htmlText2.Wait();
-                    ResourceInfo resource = new ResourceInfo(rn, i);
-                    Console.WriteLine(rn);
-                    ProcHTML2(htmlText2.Result, resource);
-                    resources.Add(resource);
-                    Console.WriteLine();
-                }
-                */
+                resources = resources.Concat(res).ToList();          
+
                 i++;
             }
+            */
             ResourceInfoCollection rc = new ResourceInfoCollection();
             rc.resources = resources.ToArray();
             if (!Directory.Exists(@".\Data")) Directory.CreateDirectory(@".\Data");
