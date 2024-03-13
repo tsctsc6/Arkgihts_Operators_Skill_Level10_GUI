@@ -27,12 +27,12 @@
                 <ColumnDefinition Width="auto" MinWidth="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <ComboBox x:Name="OperatorNmae_ComboBox" Grid.Column="0" Margin="10" IsEditable="True" SelectedIndex="-1" IsTextSearchEnabled="False" TextBoxBase.TextChanged="OperatorNmae_ComboBox_TextChanged" IsSynchronizedWithCurrentItem="False"/>
-            <Button x:Name="Inquare_Button" Grid.Column="1" Margin="10" Content="查询" Click="Inquare_Button_Click"/>
             <ComboBox x:Name="Skill_ComboBox" Grid.Column="2" Margin="10" SelectedIndex="0" SelectionChanged="Skill_ComboBox_SelectionChanged">
                 <System:String>第一技能</System:String>
                 <System:String>第二技能</System:String>
                 <System:String>第三技能</System:String>
             </ComboBox>
+            <Button x:Name="Inquare_Button" Grid.Column="1" Margin="10" Content="查询" Click="Inquare_Button_Click"/>
             <Button x:Name="Update_Button" Grid.Column="3" Margin="10" Content="更新数据" Click="Update_Button_Click"/>
             <Label x:Name="State_Label" Grid.Column="4" Margin="10" Content="Done"/>
         </Grid>
