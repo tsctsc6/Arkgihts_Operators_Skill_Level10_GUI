@@ -102,7 +102,11 @@ namespace 明日方舟专三材料GUI
 
         private void OpenFile_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(depot_res_Path)) File.WriteAllText(depot_res_Path, "{\"@type\":\"@penguin-statistics/depot\",\"items\":[]}");
+            if (!File.Exists(depot_res_Path))
+            {
+                if (!Directory.Exists(@".\Data")) Directory.CreateDirectory(@".\Data");
+                File.WriteAllText(depot_res_Path, "{\"@type\":\"@penguin-statistics/depot\",\"items\":[]}");
+            }
             Process subp = new Process();
             subp.StartInfo.FileName = @"C:\WINDOWS\system32\NOTEPAD.EXE";
             subp.StartInfo.Arguments = depot_res_Path;
