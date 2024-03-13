@@ -80,7 +80,7 @@ namespace 明日方舟专三材料GUI
         {
             State_Label.Content = "Running";
             Pc = new ProcData(await GetDataFromWiki.GetResourceDataAsync());
-            OperatorList = (await GetDataFromWiki.GetOperatorListAsync()).Names.ToList();
+            OperatorList = [.. (await GetDataFromWiki.GetOperatorListAsync()).Names];
             OperatorNmae_ComboBox.ItemsSource = OperatorList;
             MessageBox.Show("更新完成", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
             State_Label.Content = "Done";
