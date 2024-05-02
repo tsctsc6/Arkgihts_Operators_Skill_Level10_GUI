@@ -14,9 +14,9 @@ namespace GetArknightsData
                 return;
             }
             ResourceDictionary = new();
-            foreach(var item in rc.resources)
+            foreach(var item in rc.Resources)
             {
-                ResourceDictionary.Add(item.name, item);
+                ResourceDictionary.Add(item.Name, item);
             }
             return;
         }
@@ -79,15 +79,15 @@ namespace GetArknightsData
             ResourceInfo? resourceInfo;
             try { resourceInfo = ResourceDictionary[name]; }
             catch(KeyNotFoundException) { return false; }
-            if (resourceInfo.rarity <= targetrRrity)
+            if (resourceInfo.Rarity <= targetrRrity)
             {
-                if (!dic.ContainsKey(resourceInfo.name))
-                    dic.Add(resourceInfo.name, num);
+                if (!dic.ContainsKey(resourceInfo.Name))
+                    dic.Add(resourceInfo.Name, num);
                 else
-                    dic[resourceInfo.name] = dic[resourceInfo.name] + num;
+                    dic[resourceInfo.Name] = dic[resourceInfo.Name] + num;
                 return true;
             }
-            if (resourceInfo.rarity == targetrRrity + 1)
+            if (resourceInfo.Rarity == targetrRrity + 1)
             {
                 if (resourceInfo.synthesisItem.Length == 0) return true;
                 foreach (var si in resourceInfo.synthesisItem)
@@ -99,7 +99,7 @@ namespace GetArknightsData
                 }
                 return true;
             }
-            if (resourceInfo.rarity > targetrRrity + 1)
+            if (resourceInfo.Rarity > targetrRrity + 1)
             {
                 foreach (var si in resourceInfo.synthesisItem)
                     if (!CalSynthesis(si.Name, si.Count * num, targetrRrity, dic))
@@ -220,7 +220,7 @@ namespace GetArknightsData
             var keys = new List<string>(LackDirectDepot.Keys);
             for(int i = 0; i < keys.Count; i++)
             {
-                if (LackDirectDepot[keys[i]] < 0 & ResourceDictionary[keys[i]].rarity == currentRrity)
+                if (LackDirectDepot[keys[i]] < 0 & ResourceDictionary[keys[i]].Rarity == currentRrity)
                 {
                     DicSelfOperator(LackDirectDepot, CalSynthesis(keys[i], -LackDirectDepot[keys[i]], currentRrity - 1),
                         (x, y) => x - y);
@@ -245,7 +245,7 @@ namespace GetArknightsData
         {
             if (!ResourceDictionary.ContainsKey(x.Key) | !ResourceDictionary.ContainsKey(y.Key))
                 throw new ArgumentException("There is no such a key in ResourceDictionary");
-            return ResourceDictionary[x.Key].rarity - ResourceDictionary[y.Key].rarity;
+            return ResourceDictionary[x.Key].Rarity - ResourceDictionary[y.Key].Rarity;
         }
     }
 }

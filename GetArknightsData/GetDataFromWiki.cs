@@ -33,7 +33,7 @@ namespace GetArknightsData
             }
             ResourceInfoCollection rc = new()
             {
-                resources = [.. resources]
+                Resources = [.. resources]
             };
             if (!Directory.Exists(@".\Data")) Directory.CreateDirectory(@".\Data");
             string jsonString = JsonSerializer.Serialize(rc, new JsonSerializerOptions
@@ -108,11 +108,11 @@ namespace GetArknightsData
         static ResourceInfo ProcHTML_GetResourceData2(in string htmlText, int rarity)
         {
             ResourceInfo resource = new ResourceInfo();
-            resource.rarity = rarity;
+            resource.Rarity = rarity;
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(htmlText);
             HtmlNode metaNode = doc.DocumentNode.SelectSingleNode("//meta[@property='og:title']");
-            resource.name = metaNode.Attributes["content"].Value;
+            resource.Name = metaNode.Attributes["content"].Value;
             HtmlNode node = doc.DocumentNode.SelectSingleNode("//span[@id='加工站']/../following-sibling::table[1]/tbody/tr[2]");
             if (node == null) return resource;
             HtmlNodeCollection nodes = node.SelectNodes("./td");
