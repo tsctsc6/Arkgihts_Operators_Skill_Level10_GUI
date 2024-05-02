@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace GetArknightsData
 {
@@ -97,17 +92,17 @@ namespace GetArknightsData
                 if (resourceInfo.synthesisItem.Length == 0) return true;
                 foreach (var si in resourceInfo.synthesisItem)
                 {
-                    if (!dic.ContainsKey(si.name))
-                        dic.Add(si.name, si.count * num);
+                    if (!dic.ContainsKey(si.Name))
+                        dic.Add(si.Name, si.Count * num);
                     else
-                        dic[si.name] = dic[si.name] + si.count * num;
+                        dic[si.Name] = dic[si.Name] + si.Count * num;
                 }
                 return true;
             }
             if (resourceInfo.rarity > targetrRrity + 1)
             {
                 foreach (var si in resourceInfo.synthesisItem)
-                    if (!CalSynthesis(si.name, si.count * num, targetrRrity, dic))
+                    if (!CalSynthesis(si.Name, si.Count * num, targetrRrity, dic))
                         return false;
                 return true;
             }

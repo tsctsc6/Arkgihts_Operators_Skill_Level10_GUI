@@ -33,7 +33,7 @@ namespace 明日方舟专三材料GUI
                 Label_Time.Content = File.GetLastWriteTime(depot_res_Path).ToString();
                 OperatorNmae_ComboBox.ItemsSource = OperatorList;
             }
-            catch (Exception e) { MessageBox.Show(e.Message, "发生错误", MessageBoxButton.OK, MessageBoxImage.Error);}
+            catch (Exception e) { MessageBox.Show(e.Message, "发生错误", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);}
         }
 
         private void OperatorNmae_ComboBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -82,7 +82,7 @@ namespace 明日方舟专三材料GUI
             Pc = new ProcData(await GetDataFromWiki.GetResourceDataAsync());
             OperatorList = [.. (await GetDataFromWiki.GetOperatorListAsync()).Names];
             OperatorNmae_ComboBox.ItemsSource = OperatorList;
-            MessageBox.Show("更新完成", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("更新完成", "提示", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
             State_Label.Content = "Done";
         }
 

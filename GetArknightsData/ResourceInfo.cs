@@ -1,21 +1,19 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace GetArknightsData
+﻿namespace GetArknightsData
 {
     public class SynthesisItem
     {
-        public string name { get; set; } = "";
-        public int count { get; set; } = 0;
+        public string Name { get; set; } = "";
+        public int Count { get; set; } = 0;
         public SynthesisItem() {; }
         public SynthesisItem(string name, int count)
         {
-            this.name = name;
-            this.count = count;
+            this.Name = name;
+            this.Count = count;
         }
         public SynthesisItem(string name, string count)
         {
-            this.name = name;
-            this.count = int.Parse(count);
+            this.Name = name;
+            this.Count = int.Parse(count);
         }
     }
     public class ResourceInfo

@@ -1,12 +1,7 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
-using System.Threading.Tasks;
 
 namespace GetArknightsData
 {
@@ -26,38 +21,20 @@ namespace GetArknightsData
             string htmlText = await GetHtmlText("道具一览");
             string[][] resourceNames = ProcHTML_GetResourceData(htmlText);
             //Console.WriteLine();
-            int i = 2;
-            List<ResourceInfo> resources = new();
-            do
+            IEnumerable<ResourceInfo> resources = [];
+            Task<string[]>[] htmls_2d = [Task.WhenAll(resourceNames[0].Select(GetHtmlText).ToArray()),
+                                          Task.WhenAll(resourceNames[1].Select(GetHtmlText).ToArray()),
+                                          Task.WhenAll(resourceNames[2].Select(GetHtmlText).ToArray())];
+            var htmls_2d_res = await Task.WhenAll(htmls_2d);
+            for(int i = 0; i < htmls_2d_res.Length; i++)
             {
-                int j = 0;
-                string[] resourceName = resourceNames[i - 2];
-                string? html = null;
-                do
-                {
-                    Task<string>? t = null;
-                    if (j == 0) html = await GetHtmlText(resourceName[j]);
-                    if (j < resourceName.Length - 1) t = GetHtmlText(resourceName[j + 1]);
-                    var res = ProcHTML_GetResourceData2(html, i);
-                    if (t != null) html = await t;
-                    resources.Add(res);
-                    j++;
-                } while (j < resourceName.Length);
-                i++;
-            } while (i < 5);
-            /*
-            foreach (var rns in resourceNames)
-            {
-                var htmls = rns.Select(rn => GetHtmlText(rn)).ToArray();
-                await Task.WhenAll(htmls);
-                var res = htmls.Select(html => ProcHTML_GetResourceData2(html.Result, i)).ToList();
-                resources = resources.Concat(res).ToList();          
-
-                i++;
+                var res = htmls_2d_res[i].Select(html => ProcHTML_GetResourceData2(html, i + 2));
+                resources = resources.Concat(res);
             }
-            */
-            ResourceInfoCollection rc = new ResourceInfoCollection();
-            rc.resources = resources.ToArray();
+            ResourceInfoCollection rc = new()
+            {
+                resources = [.. resources]
+            };
             if (!Directory.Exists(@".\Data")) Directory.CreateDirectory(@".\Data");
             string jsonString = JsonSerializer.Serialize(rc, new JsonSerializerOptions
             {
@@ -116,12 +93,12 @@ namespace GetArknightsData
             }
             Console.WriteLine($"·总数：{nodes_2.Count + nodes_3.Count + nodes_4.Count}");
             */
-            return new string[3][]
-            {
+            return
+            [
                 nodes_2.Select(n => n.Attributes["data-name"].Value).ToArray(),
                 nodes_3.Select(n => n.Attributes["data-name"].Value).ToArray(),
                 nodes_4.Select(n => n.Attributes["data-name"].Value).ToArray()
-            };
+            ];
         }
         /// <summary>
         /// 获取道具合成公式
