@@ -23,6 +23,7 @@ namespace 明日方舟专三材料GUI
         public MainWindow()
         {
             InitializeComponent();
+            /*
             try
             {
                 Pc = new ProcData(JsonSerializer.Deserialize<ResourceInfoCollection>
@@ -33,9 +34,21 @@ namespace 明日方舟专三材料GUI
                 Label_Time.Content = File.GetLastWriteTime(depot_res_Path).ToString();
                 OperatorNmae_ComboBox.ItemsSource = OperatorList;
             }
-            catch (Exception e) { MessageBox.Show(e.Message, "发生错误", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);}
+            catch (Exception e) { MessageBox.Show(e.Message, "发生错误", MessageBoxButton.OK,
+                MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);}
+            */
+            DataContext = new MainWindowViewModel();
         }
 
+        private void ComboBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is not ComboBox sender2) return;
+            if (DataContext is not MainWindowViewModel DataContext2) return;
+            DataContext2!.OperatorCollectionView.Refresh();
+            sender2.IsDropDownOpen = true;
+        }
+
+        /*
         private void OperatorNmae_ComboBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             OperatorNmae_ComboBox.SelectedIndex = -1;
@@ -115,5 +128,6 @@ namespace 明日方舟专三材料GUI
             Label_Time.Content = File.GetLastWriteTime(depot_res_Path).ToString();
             Pc?.LoadDepot(depot_res_Path);
         }
+        */
     }
 }

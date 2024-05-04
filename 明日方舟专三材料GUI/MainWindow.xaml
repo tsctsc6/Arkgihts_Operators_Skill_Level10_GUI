@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:明日方舟专三材料GUI"
         xmlns:System="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         Title="明日方舟专三材料GUI" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
@@ -26,14 +27,20 @@
                 <ColumnDefinition Width="auto" MinWidth="100"></ColumnDefinition>
                 <ColumnDefinition Width="auto" MinWidth="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ComboBox x:Name="OperatorNmae_ComboBox" Grid.Column="0" Margin="10" IsEditable="True" SelectedIndex="-1" IsTextSearchEnabled="False" TextBoxBase.TextChanged="OperatorNmae_ComboBox_TextChanged" IsSynchronizedWithCurrentItem="False"/>
-            <ComboBox x:Name="Skill_ComboBox" Grid.Column="1" Margin="10" SelectedIndex="0" SelectionChanged="Skill_ComboBox_SelectionChanged">
+            <!--ComboBox x:Name="OperatorNmae_ComboBox" Grid.Column="0" Margin="10" IsEditable="True" SelectedIndex="-1" IsTextSearchEnabled="False" TextBoxBase.TextChanged="OperatorNmae_ComboBox_TextChanged" IsSynchronizedWithCurrentItem="False"/-->
+            <ComboBox Grid.Column="0" Margin="10" IsEditable="True" SelectedIndex="-1"
+                      ItemsSource="{Binding OperatorCollectionView}"
+                      Text="{Binding ComboboxText}"
+                      TextBoxBase.TextChanged="ComboBox_TextChanged"
+                      IsTextSearchEnabled="False"
+                      IsSynchronizedWithCurrentItem="False"/>
+            <ComboBox x:Name="Skill_ComboBox" Grid.Column="1" Margin="10" SelectedIndex="0">
                 <System:String>第一技能</System:String>
                 <System:String>第二技能</System:String>
                 <System:String>第三技能</System:String>
             </ComboBox>
-            <Button x:Name="Inquare_Button" Grid.Column="2" Margin="10" Content="查询" Click="Inquare_Button_Click"/>
-            <Button x:Name="Update_Button" Grid.Column="3" Margin="10" Content="更新数据" Click="Update_Button_Click"/>
+            <Button x:Name="Inquare_Button" Grid.Column="2" Margin="10" Content="查询" Command="{Binding InquareCommand}"/>
+            <Button x:Name="Update_Button" Grid.Column="3" Margin="10" Content="更新数据" Command="{Binding UpdateCommand}"/>
             <Label x:Name="State_Label" Grid.Column="4" Margin="10" Content="Done"/>
         </Grid>
         <Grid Background="#FFE5E5E5" Grid.Row="1" Grid.Column="0">
@@ -57,7 +64,8 @@
                 </Grid.ColumnDefinitions>
                 <Label Content="仓库文件最后更新时间" Grid.Column="0"/>
                 <Label x:Name="Label_Time" Content="1970/01/01 00:00:00" Grid.Column="1"/>
-                <Button x:Name="OpenFile_Button" Content="以记事本打开仓库文件" Grid.Column="2" Height="25" Width="134" Click="OpenFile_Button_Click"/>
+                <Button x:Name="OpenFile_Button" Content="以记事本打开仓库文件" Grid.Column="2" Height="25" Width="134"
+                        Command="{Binding OpenFileCommand}"/>
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="0">
