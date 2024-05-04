@@ -20,8 +20,6 @@ namespace GetArknightsData
         {
             string htmlText = await GetHtmlText("道具一览");
             string[][] resourceNames = ProcHTML_GetResourceData(htmlText);
-            //Console.WriteLine();
-            IEnumerable<ResourceInfo> resources = [];
             Task<string[]>[] htmls_2d = [Task.WhenAll(resourceNames[0].Select(GetHtmlText).ToArray()),
                                           Task.WhenAll(resourceNames[1].Select(GetHtmlText).ToArray()),
                                           Task.WhenAll(resourceNames[2].Select(GetHtmlText).ToArray())];
