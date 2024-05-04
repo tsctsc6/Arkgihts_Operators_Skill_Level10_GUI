@@ -26,14 +26,12 @@ namespace GetArknightsData
                                           Task.WhenAll(resourceNames[1].Select(GetHtmlText).ToArray()),
                                           Task.WhenAll(resourceNames[2].Select(GetHtmlText).ToArray())];
             var htmls_2d_res = await Task.WhenAll(htmls_2d);
-            for(int i = 0; i < htmls_2d_res.Length; i++)
-            {
-                var res = htmls_2d_res[i].Select(html => ProcHTML_GetResourceData2(html, i + 2));
-                resources = resources.Concat(res);
-            }
+            var res0 = htmls_2d_res[0].Select(html => ProcHTML_GetResourceData2(html, 2));
+            var res1 = htmls_2d_res[1].Select(html => ProcHTML_GetResourceData2(html, 3));
+            var res2 = htmls_2d_res[2].Select(html => ProcHTML_GetResourceData2(html, 4));
             ResourceInfoCollection rc = new()
             {
-                Resources = [.. resources]
+                Resources = res0.Concat(res1).Concat(res2).ToArray()
             };
             if (!Directory.Exists(@".\Data")) Directory.CreateDirectory(@".\Data");
             string jsonString = JsonSerializer.Serialize(rc, new JsonSerializerOptions
