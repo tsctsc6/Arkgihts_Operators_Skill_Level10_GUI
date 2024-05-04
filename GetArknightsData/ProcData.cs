@@ -20,6 +20,13 @@ namespace GetArknightsData
             }
             return;
         }
+        /// <summary>
+        /// 对于dic2所有Key，dic1中如果存在该Key，则执行op；dic1中如果不存在该Key，则初始化该Key；返回全新的dic。
+        /// </summary>
+        /// <param name="dic1"></param>
+        /// <param name="dic2"></param>
+        /// <param name="op"></param>
+        /// <returns></returns>
         static public Dictionary<string, int> DicOperator(in Dictionary<string, int> dic1, in Dictionary<string, int> dic2,
             Func<int, int, int> op)
         {
