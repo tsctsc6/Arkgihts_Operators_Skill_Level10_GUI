@@ -38,6 +38,13 @@ namespace GetArknightsData
             }
             return dic;
         }
+        /// <summary>
+        /// 对于dic2所有Key，dic1中如果存在该Key，则执行op；dic1中如果不存在该Key，则初始化该Key并执行op；修改dic1。
+        /// </summary>
+        /// <param name="dic1"></param>
+        /// <param name="dic2"></param>
+        /// <param name="op"></param>
+        /// <returns></returns>
         static public Dictionary<string, int> DicSelfOperator(Dictionary<string, int> dic1, in Dictionary<string, int> dic2,
             Func<int, int, int> op)
         {
@@ -225,17 +232,17 @@ namespace GetArknightsData
         {
             if (currentRrity == targetrRrity) return;
             var keys = new List<string>(LackDirectDepot.Keys);
-            for(int i = 0; i < keys.Count; i++)
+            foreach(var key in keys)
             {
-                if (LackDirectDepot[keys[i]] < 0 & ResourceDictionary[keys[i]].Rarity == currentRrity)
+                if (LackDirectDepot[key] < 0 & ResourceDictionary[key].Rarity == currentRrity)
                 {
-                    DicSelfOperator(LackDirectDepot, CalSynthesis(keys[i], -LackDirectDepot[keys[i]], currentRrity - 1),
+                    DicSelfOperator(LackDirectDepot, CalSynthesis(key, -LackDirectDepot[key], currentRrity - 1),
                         (x, y) => x - y);
-                    if (!dicSynthesisPath.ContainsKey(keys[i]))
-                        dicSynthesisPath.Add(keys[i], -LackDirectDepot[keys[i]]);
+                    if (!dicSynthesisPath.ContainsKey(key))
+                        dicSynthesisPath.Add(key, -LackDirectDepot[key]);
                     else
-                        dicSynthesisPath[keys[i]] = dicSynthesisPath[keys[i]] - LackDirectDepot[keys[i]];
-                    LackDirectDepot.Remove(keys[i]);
+                        dicSynthesisPath[key] = dicSynthesisPath[key] - LackDirectDepot[key];
+                    LackDirectDepot.Remove(key);
                 }
             }
             CalLack_Rarity2(LackDirectDepot, dicSynthesisPath, currentRrity - 1, targetrRrity);
