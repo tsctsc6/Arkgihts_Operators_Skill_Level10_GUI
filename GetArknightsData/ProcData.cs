@@ -198,7 +198,7 @@ namespace GetArknightsData
             return list;
         }
         /// <summary>
-        /// 计算总体欠缺的2级材料
+        /// 计算总计需要合成的材料和总体欠缺的2级材料
         /// </summary>
         /// <param name="skillData"></param>
         /// <returns>(总计需要合成的材料，总体欠缺的2级材料)</returns>
