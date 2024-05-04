@@ -212,7 +212,7 @@ namespace GetArknightsData
             if (dicLack2.Count == 0) dicLack2.Add("无", 0);
             return (list, dicLack2);
         }
-        public void CalLack_Rarity2(Dictionary<string, int> LackDirectDepot,
+        private void CalLack_Rarity2(Dictionary<string, int> LackDirectDepot,
             Dictionary<string, int> dicSynthesisPath,
             int currentRrity, int targetrRrity)
         {
