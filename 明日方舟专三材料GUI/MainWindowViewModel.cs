@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,9 +31,9 @@ namespace 明日方舟专三材料GUI
         string comboboxText = string.Empty;
 
         public ICollectionView OperatorCollectionView { get; private set; }
-        //List<KeyValuePair<string, int>> synList;
+        List<ResultClass> synList = new();
         public ICollectionView SynCollectionView { get; private set; }
-        //List<KeyValuePair<string, int>> lackList;
+        List<ResultClass> lackList = new();
         public ICollectionView LackCollectionView { get; private set; }
 
         public MainWindowViewModel()
@@ -45,7 +46,6 @@ namespace 明日方舟专三材料GUI
                 operatorArray = JsonSerializer.Deserialize<OperatorCollection>
                     (File.ReadAllText(GetDataFromWiki.OperatorListPath))?.Names;
                 LastWriteTime = File.GetLastWriteTime(depot_res_Path).ToString();
-                //!! OperatorNmae_ComboBox.ItemsSource = OperatorArray;
             }
             catch (Exception e) { MessageBox.Show(e.Message, "发生错误", MessageBoxButton.OK,
                 MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly); }
@@ -56,8 +56,8 @@ namespace 明日方舟专三材料GUI
                 if (o is not string s) return false;
                 return s.Contains(ComboboxText);
             };
-            SynCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
-            LackCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
+            SynCollectionView = CollectionViewSource.GetDefaultView(synList);
+            LackCollectionView = CollectionViewSource.GetDefaultView(lackList);
         }
 
         [RelayCommand]
@@ -68,8 +68,7 @@ namespace 明日方舟专三材料GUI
             SkillLevel? data;
             try { data = operatorSkillData?.skills[SkillComboBox_SelectedIndex]; }
             catch (IndexOutOfRangeException) { ShowData(null); return; }
-            var res = await Task.Run(() => Proc_Inquare_Async(data));
-            ShowData(res);
+            ShowData(await Task.Run(() => Proc_Inquare_Async(data)));
         }
 
         private (List<KeyValuePair<string, int>>, Dictionary<string, int>)? Proc_Inquare_Async(SkillLevel? data)
@@ -81,16 +80,17 @@ namespace 明日方舟专三材料GUI
 
         private void ShowData((List<KeyValuePair<string, int>>, Dictionary<string, int>)? res)
         {
-            if (res == null)
+            synList.Clear();
+            lackList.Clear();
+            if (res != null)
             {
-                SynCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
-                LackCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
+                synList.AddRange(res.Value.Item1.Select(
+                    kv => new ResultClass() { Name = kv.Key, Num = kv.Value }));
+                lackList.AddRange(res.Value.Item2.Select(
+                    kv => new ResultClass() { Name = kv.Key, Num = kv.Value }));
             }
-            else
-            {
-                SynCollectionView = CollectionViewSource.GetDefaultView(res.Value.Item1);
-                LackCollectionView = CollectionViewSource.GetDefaultView(res.Value.Item2);
-            }
+            SynCollectionView.Refresh();
+            LackCollectionView.Refresh();
             StateText = "Done";
         }
 

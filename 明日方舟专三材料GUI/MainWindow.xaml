@@ -75,15 +75,19 @@
                           CanUserSortColumns="False"
                           IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="需要合成的材料" Binding="{Binding Key}"/>
-                        <DataGridTextColumn Header="数量" Binding="{Binding Value}"/>
+                        <DataGridTextColumn Header="需要合成的材料" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="数量" Binding="{Binding Num}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid x:Name="DataGrid_lack" FontSize="16"
-                          ItemsSource="{Binding LackCollectionView}">
+                <DataGrid FontSize="16"
+                          ItemsSource="{Binding LackCollectionView}"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="欠缺的蓝色材料" Binding="{Binding Key}"/>
-                        <DataGridTextColumn Header="数量" Binding="{Binding Value}"/>
+                        <DataGridTextColumn Header="欠缺的蓝色材料" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="数量" Binding="{Binding Num}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </UniformGrid>
