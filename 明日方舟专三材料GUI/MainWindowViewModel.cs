@@ -64,7 +64,15 @@ namespace 明日方舟专三材料GUI
         private async Task InquareAsync()
         {
             StateText = "Running";
-            operatorSkillData = await GetDataFromWiki.GetSpecializationDataAsync(ComboboxText);
+            try
+            {
+                operatorSkillData = await GetDataFromWiki.GetSpecializationDataAsync(ComboboxText);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "发生错误", MessageBoxButton.OK,
+                    MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            }
             SkillLevel? data;
             try { data = operatorSkillData?.skills[SkillComboBox_SelectedIndex]; }
             catch (IndexOutOfRangeException) { ShowData(null); return; }
@@ -99,9 +107,11 @@ namespace 明日方舟专三材料GUI
         {
             StateText = "Running";
             pc = new ProcData(await GetDataFromWiki.GetResourceDataAsync());
+            pc.LoadDepot(depot_res_Path);
             operatorArray = [.. (await GetDataFromWiki.GetOperatorListAsync()).Names];
             OperatorCollectionView.Refresh();
-            MessageBox.Show("更新完成", "提示", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            MessageBox.Show("更新完成", "提示", MessageBoxButton.OK,
+                MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
             StateText = "Done";
         }
 

@@ -178,7 +178,12 @@ namespace GetArknightsData
         {
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(htmlText);
-            var a = doc.DocumentNode.SelectNodes("//*[@id=\"技能升级材料\"]")[0];
+            HtmlNodeCollection? a2 = doc.DocumentNode.SelectNodes("//*[@id=\"技能升级材料\"]");
+            if  (a2 == null)
+            {
+                throw new Exception($"干员\"{name}\"可能不存在");
+            }
+            var a = a2[0];
             var table = a.SelectNodes("../following-sibling::table[1]/tbody")[0];
             // ./tr[7]/td[1]/div[1]/a
             // 等级1    技能1     材料1
