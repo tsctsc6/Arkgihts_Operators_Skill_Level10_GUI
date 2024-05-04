@@ -26,10 +26,14 @@ namespace 明日方舟专三材料GUI
         string stateText = "Done";
         [ObservableProperty]
         int skillComboBox_SelectedIndex = 0;
-
-        public ICollectionView OperatorCollectionView { get; private set; }
         [ObservableProperty]
         string comboboxText = string.Empty;
+
+        public ICollectionView OperatorCollectionView { get; private set; }
+        //List<KeyValuePair<string, int>> synList;
+        public ICollectionView SynCollectionView { get; private set; }
+        //List<KeyValuePair<string, int>> lackList;
+        public ICollectionView LackCollectionView { get; private set; }
 
         public MainWindowViewModel()
         {
@@ -52,6 +56,8 @@ namespace 明日方舟专三材料GUI
                 if (o is not string s) return false;
                 return s.Contains(ComboboxText);
             };
+            SynCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
+            LackCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
         }
 
         [RelayCommand]
@@ -75,17 +81,16 @@ namespace 明日方舟专三材料GUI
 
         private void ShowData((List<KeyValuePair<string, int>>, Dictionary<string, int>)? res)
         {
-            /*
             if (res == null)
             {
-                DataGrid_syn.ItemsSource = null;
-                DataGrid_lack.ItemsSource = null;
-                State_Label.Content = "Done";
-                return;
+                SynCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
+                LackCollectionView = CollectionViewSource.GetDefaultView(new List<KeyValuePair<string, int>>());
             }
-            DataGrid_syn.ItemsSource = res.Value.Item1;
-            DataGrid_lack.ItemsSource = res.Value.Item2;
-            */
+            else
+            {
+                SynCollectionView = CollectionViewSource.GetDefaultView(res.Value.Item1);
+                LackCollectionView = CollectionViewSource.GetDefaultView(res.Value.Item2);
+            }
             StateText = "Done";
         }
 

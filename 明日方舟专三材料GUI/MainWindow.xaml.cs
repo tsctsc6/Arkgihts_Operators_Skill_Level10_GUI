@@ -18,6 +18,7 @@ namespace 明日方舟专三材料GUI
         {
             if (sender is not ComboBox sender2) return;
             if (DataContext is not MainWindowViewModel DataContext2) return;
+            sender2.SelectedIndex = -1;
             DataContext2!.OperatorCollectionView.Refresh();
             sender2.IsDropDownOpen = true;
         }

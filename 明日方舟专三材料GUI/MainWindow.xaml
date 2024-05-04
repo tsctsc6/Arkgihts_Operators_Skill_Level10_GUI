@@ -68,20 +68,22 @@
 
             <UniformGrid Rows="1" Columns="2" Grid.Row="2" Grid.Column="0">
                 <DataGrid FontSize="16"
+                          ItemsSource="{Binding SynCollectionView}"
                           CanUserAddRows="False"
                           CanUserDeleteRows="False"
                           AutoGenerateColumns="False"
                           CanUserSortColumns="False"
                           IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="需要合成的材料"/>
-                        <DataGridTextColumn Header="数量"/>
+                        <DataGridTextColumn Header="需要合成的材料" Binding="{Binding Key}"/>
+                        <DataGridTextColumn Header="数量" Binding="{Binding Value}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid x:Name="DataGrid_lack" FontSize="16">
+                <DataGrid x:Name="DataGrid_lack" FontSize="16"
+                          ItemsSource="{Binding LackCollectionView}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="欠缺的蓝色材料"/>
-                        <DataGridTextColumn Header="数量"/>
+                        <DataGridTextColumn Header="欠缺的蓝色材料" Binding="{Binding Key}"/>
+                        <DataGridTextColumn Header="数量" Binding="{Binding Value}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </UniformGrid>
