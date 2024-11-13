@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arkgihts_Operators_Skill_Level10_GUI", "Arkgihts_Operators_Skill_Level10_GUI\Arkgihts_Operators_Skill_Level10_GUI\Arkgihts_Operators_Skill_Level10_GUI.csproj", "{0E7CD105-933C-4846-AD73-C1D4BBD459A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arkgihts_Operators_Skill_Level10_GUI.Android", "Arkgihts_Operators_Skill_Level10_GUI\Arkgihts_Operators_Skill_Level10_GUI.Android\Arkgihts_Operators_Skill_Level10_GUI.Android.csproj", "{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arkgihts_Operators_Skill_Level10_GUI.Desktop", "Arkgihts_Operators_Skill_Level10_GUI\Arkgihts_Operators_Skill_Level10_GUI.Desktop\Arkgihts_Operators_Skill_Level10_GUI.Desktop.csproj", "{D3CCA1EE-78BE-45C2-A4A2-8C73824773B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arkgihts_Operators_Skill_Level10_GUI.iOS", "Arkgihts_Operators_Skill_Level10_GUI\Arkgihts_Operators_Skill_Level10_GUI.iOS\Arkgihts_Operators_Skill_Level10_GUI.iOS.csproj", "{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arkgihts_Operators_Skill_Level10_GUI.Browser", "Arkgihts_Operators_Skill_Level10_GUI\Arkgihts_Operators_Skill_Level10_GUI.Browser\Arkgihts_Operators_Skill_Level10_GUI.Browser.csproj", "{311F585F-7239-4A6F-B30E-A833704D2427}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E7CD105-933C-4846-AD73-C1D4BBD459A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7CD105-933C-4846-AD73-C1D4BBD459A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7CD105-933C-4846-AD73-C1D4BBD459A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7CD105-933C-4846-AD73-C1D4BBD459A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B70CD64-B953-4D0C-969E-C0BE3857F3DC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D3CCA1EE-78BE-45C2-A4A2-8C73824773B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3CCA1EE-78BE-45C2-A4A2-8C73824773B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3CCA1EE-78BE-45C2-A4A2-8C73824773B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3CCA1EE-78BE-45C2-A4A2-8C73824773B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{154AD051-FA9E-48E8-B197-1DD79CC0EAEF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{311F585F-7239-4A6F-B30E-A833704D2427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{311F585F-7239-4A6F-B30E-A833704D2427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{311F585F-7239-4A6F-B30E-A833704D2427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{311F585F-7239-4A6F-B30E-A833704D2427}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
