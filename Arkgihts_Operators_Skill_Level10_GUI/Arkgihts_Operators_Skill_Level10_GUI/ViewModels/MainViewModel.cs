@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,10 +11,38 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 
-public partial class MainViewModel(HttpClient httpClient, HtmlParser htmlParser) : ViewModelBase
+public partial class MainViewModel : ViewModelBase
 {
-    private IEnumerable<string> _operatorList = [];
-    private IEnumerable<Material> _materialList = [];
+    private IEnumerable<string> _operatorList;
+    private IEnumerable<Material> _materialList;
+    private readonly HttpClient _httpClient;
+    private readonly HtmlParser _htmlParser;
+    
+    public MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
+    {
+        _httpClient = httpClient;
+        _htmlParser = htmlParser;
+        if (!File.Exists(App.ResourceInfoPath))
+        {
+            _operatorList = [];
+            _materialList = [];
+        }
+        else
+        {
+            var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText("ResourceInfo.json"),
+                App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
+            if (resourceInfo == null)
+            {
+                _operatorList = [];
+                _materialList = [];
+            }
+            else
+            {
+                _operatorList = resourceInfo.OperatorList;
+                _materialList = resourceInfo.MaterialList;
+            }
+        }
+    }
 
     [RelayCommand]
     private async Task GetResourceInfoAsync()
@@ -30,9 +57,9 @@ public partial class MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     
     private async Task GetOperatorListAsync()
     {
-        var resp = await httpClient.GetAsync("https://prts.wiki/w/%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88");
+        var resp = await _httpClient.GetAsync("https://prts.wiki/w/%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88");
         resp.EnsureSuccessStatusCode();
-        var document = htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var operatorData = document.QuerySelector("div#filter-data")?.Children;
         _operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
                    .Select(n => n!) ?? [];
@@ -40,9 +67,9 @@ public partial class MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     
     private async Task GetMaterialListAsync()
     {
-        var resp = await httpClient.GetAsync("https://prts.wiki/w/%E9%81%93%E5%85%B7%E4%B8%80%E8%A7%88");
+        var resp = await _httpClient.GetAsync("https://prts.wiki/w/%E9%81%93%E5%85%B7%E4%B8%80%E8%A7%88");
         resp.EnsureSuccessStatusCode();
-        var document = htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var materialData = document.QuerySelector("div.mw-parser-output")?.Children
             .Where(e =>
             {
@@ -64,9 +91,9 @@ public partial class MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
 
     private async Task GetCompositionAsync(Material material)
     {
-        var resp = await httpClient.GetAsync($"https://prts.wiki/w/{material.Name}");
+        var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{material.Name}");
         resp.EnsureSuccessStatusCode();
-        var document = htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var composition = document.QuerySelector("span#加工站")?.ParentElement?.NextElementSibling?
             .QuerySelector("tbody > tr:nth-child(2) > td > div")?.Children;
         if (composition is null) return;

@@ -17,7 +17,9 @@ namespace Arkgihts_Operators_Skill_Level10_GUI;
 public partial class App : Application
 {
     public new static App Current => (Application.Current as App)!;
-    
+
+    public const string ResourceInfoPath = "ResourceInfo.json";
+
     public IServiceProvider ServiceProvider { get; }
     
     public App()
