@@ -1,5 +1,8 @@
 using System;
 using System.Net.Http;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -25,7 +28,14 @@ public partial class App : Application
     private IServiceProvider ConfigureServices()
     {
         var serviceCollention = new ServiceCollection()
-            .AddSingleton<HttpClient>();
+            .AddSingleton<HttpClient>()
+            .AddSingleton<JsonSerializerOptions>(_ => new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                WriteIndented = true,
+                IndentSize = 4,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            });
         return serviceCollention.BuildServiceProvider();
     }
     
