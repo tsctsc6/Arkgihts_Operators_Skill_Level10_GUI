@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -18,7 +19,7 @@ namespace Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     //private IEnumerable<string> _operatorList;
-    private IEnumerable<Material> _materialList;
+    private FrozenDictionary<string, Material> _materialList;
     private readonly HttpClient _httpClient;
     private readonly HtmlParser _htmlParser;
 
@@ -42,7 +43,7 @@ public partial class MainViewModel : ViewModelBase
         if (!File.Exists(App.ResourceInfoPath))
         {
             OperatorList = [];
-            _materialList = [];
+            _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
             return;
         }
 
@@ -51,12 +52,12 @@ public partial class MainViewModel : ViewModelBase
         if (resourceInfo == null)
         {
             OperatorList = [];
-            _materialList = [];
+            _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
             return;
         }
 
         Array.ForEach(resourceInfo.OperatorList, s => OperatorList.Add(s));
-        _materialList = resourceInfo.MaterialList;
+        _materialList = resourceInfo.MaterialList.ToFrozenDictionary(m => m.Name);
     }
 
     [RelayCommand]
@@ -78,7 +79,7 @@ public partial class MainViewModel : ViewModelBase
         await File.WriteAllTextAsync("ResourceInfo.json", JsonSerializer.Serialize(new ResourceInfo()
         {
             OperatorList = OperatorList.ToArray(),
-            MaterialList = _materialList.ToArray()
+            MaterialList = _materialList.Select(kv => kv.Value).ToArray(),
         }, App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
     }
     
@@ -118,7 +119,7 @@ public partial class MainViewModel : ViewModelBase
             }).ToArray();
         if (materialData is null) return;
         await Task.WhenAll(materialData.Where(m => m.Rarity > 2).Select(GetCompositionAsync));
-        _materialList = materialData;
+        _materialList = materialData.ToFrozenDictionary(m => m.Name);
     }
 
     private async Task GetCompositionAsync(Material material)
