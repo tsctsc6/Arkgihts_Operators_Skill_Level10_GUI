@@ -6,7 +6,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Arkgihts_Operators_Skill_Level10_GUI.Views.MainView"
              x:DataType="vm:MainViewModel">
-    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *">
-        <Button Content="Test" Command="{Binding GetResourceInfoCommand}"/>
+    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, Auto, *">
+        <AutoCompleteBox ItemsSource="{Binding OperatorList}"
+                         FilterMode="Contains" SelectedItem="{Binding SelectedOperator}"
+                         Width="200"/>
+        <Button Grid.Row="0" Grid.Column="1" Content="Test" Command="{Binding GetOperatorSkillInfoCommand}"/>
     </Grid>
 </UserControl>

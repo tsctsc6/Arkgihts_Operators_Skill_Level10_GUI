@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -6,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using Arkgihts_Operators_Skill_Level10_GUI.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,44 +17,67 @@ namespace Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-    private IEnumerable<string> _operatorList;
+    //private IEnumerable<string> _operatorList;
     private IEnumerable<Material> _materialList;
     private readonly HttpClient _httpClient;
     private readonly HtmlParser _htmlParser;
+
+    [ObservableProperty]
+    private ObservableCollection<string> _operatorList;
+    
+    [ObservableProperty]
+    private string _selectedOperator = string.Empty;
     
     public MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
         _httpClient = httpClient;
         _htmlParser = htmlParser;
+        LoadResourceInfo();
+    }
+    
+    [MemberNotNull(nameof(_operatorList), nameof(_materialList))]
+    private void LoadResourceInfo()
+    {
+        OperatorList = new();
         if (!File.Exists(App.ResourceInfoPath))
         {
-            _operatorList = [];
+            OperatorList = [];
             _materialList = [];
+            return;
         }
-        else
+
+        var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText("ResourceInfo.json"),
+            App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
+        if (resourceInfo == null)
         {
-            var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText("ResourceInfo.json"),
-                App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
-            if (resourceInfo == null)
-            {
-                _operatorList = [];
-                _materialList = [];
-            }
-            else
-            {
-                _operatorList = resourceInfo.OperatorList;
-                _materialList = resourceInfo.MaterialList;
-            }
+            OperatorList = [];
+            _materialList = [];
+            return;
         }
+
+        Array.ForEach(resourceInfo.OperatorList, s => OperatorList.Add(s));
+        _materialList = resourceInfo.MaterialList;
     }
 
+    [RelayCommand]
+    private async Task GetOperatorSkillInfoAsync()
+    {
+        var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{_selectedOperator}");
+        resp.EnsureSuccessStatusCode();
+        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        var table = document.QuerySelector("span#技能升级材料")?.ParentElement?
+            .NextElementSibling?.NextElementSibling?
+            .QuerySelector("tbody")?.Children.Skip(9);
+        
+    }
+    
     [RelayCommand]
     private async Task GetResourceInfoAsync()
     {
         await Task.WhenAll([GetOperatorListAsync(), GetMaterialListAsync()]);
         await File.WriteAllTextAsync("ResourceInfo.json", JsonSerializer.Serialize(new ResourceInfo()
         {
-            OperatorList = _operatorList.ToArray(),
+            OperatorList = OperatorList.ToArray(),
             MaterialList = _materialList.ToArray()
         }, App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
     }
@@ -61,8 +88,13 @@ public partial class MainViewModel : ViewModelBase
         resp.EnsureSuccessStatusCode();
         var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var operatorData = document.QuerySelector("div#filter-data")?.Children;
-        _operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
+        var operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
                    .Select(n => n!) ?? [];
+        OperatorList.Clear();
+        foreach (var s in operatorList)
+        {
+            OperatorList.Add(s);
+        }
     }
     
     private async Task GetMaterialListAsync()
