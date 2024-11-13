@@ -6,7 +6,6 @@ using System.Text.Unicode;
 using AngleSharp.Html.Parser;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
