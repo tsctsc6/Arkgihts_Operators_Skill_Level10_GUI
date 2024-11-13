@@ -37,7 +37,8 @@ public partial class App : Application
                 IndentSize = 4,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
             })
-            .AddSingleton<MainViewModel>();
+            .AddSingleton<MainViewModel>()
+            .AddSingleton<MainWindow>(sp => new MainWindow(){DataContext = sp.GetRequiredService<MainViewModel>()});
         return serviceCollention.BuildServiceProvider();
     }
     
@@ -53,10 +54,7 @@ public partial class App : Application
             // Line below is needed to remove Avalonia data validation.
             // Without this line you will get duplicate validations from both Avalonia and CT
             BindingPlugins.DataValidators.RemoveAt(0);
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = ServiceProvider.GetRequiredService<MainViewModel>()
-            };
+            desktop.MainWindow = ServiceProvider.GetRequiredService<MainWindow>();
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
