@@ -35,7 +35,7 @@ public partial class MainViewModel : ViewModelBase
         LoadResourceInfo();
     }
     
-    [MemberNotNull(nameof(_operatorList), nameof(_materialList))]
+    [MemberNotNull(nameof(_operatorList), nameof(OperatorList), nameof(_materialList))]
     private void LoadResourceInfo()
     {
         OperatorList = new();
@@ -62,7 +62,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task GetOperatorSkillInfoAsync()
     {
-        var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{_selectedOperator}");
+        var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{SelectedOperator}");
         resp.EnsureSuccessStatusCode();
         var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var table = document.QuerySelector("span#技能升级材料")?.ParentElement?
