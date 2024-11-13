@@ -64,7 +64,7 @@ public partial class MainViewModel : ViewModelBase
     {
         var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{SelectedOperator}");
         resp.EnsureSuccessStatusCode();
-        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var table = document.QuerySelector("span#技能升级材料")?.ParentElement?
             .NextElementSibling?.NextElementSibling?
             .QuerySelector("tbody")?.Children.Skip(9);
@@ -86,7 +86,7 @@ public partial class MainViewModel : ViewModelBase
     {
         var resp = await _httpClient.GetAsync("https://prts.wiki/w/%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88");
         resp.EnsureSuccessStatusCode();
-        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var operatorData = document.QuerySelector("div#filter-data")?.Children;
         var operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
                    .Select(n => n!) ?? [];
@@ -101,7 +101,7 @@ public partial class MainViewModel : ViewModelBase
     {
         var resp = await _httpClient.GetAsync("https://prts.wiki/w/%E9%81%93%E5%85%B7%E4%B8%80%E8%A7%88");
         resp.EnsureSuccessStatusCode();
-        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var materialData = document.QuerySelector("div.mw-parser-output")?.Children
             .Where(e =>
             {
@@ -125,7 +125,7 @@ public partial class MainViewModel : ViewModelBase
     {
         var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{material.Name}");
         resp.EnsureSuccessStatusCode();
-        var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
+        using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var composition = document.QuerySelector("span#加工站")?.ParentElement?.NextElementSibling?
             .QuerySelector("tbody > tr:nth-child(2) > td > div")?.Children;
         if (composition is null) return;
