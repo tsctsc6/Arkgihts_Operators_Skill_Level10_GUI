@@ -1,28 +1,44 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using Arkgihts_Operators_Skill_Level10_GUI.Models;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 
 public partial class MainViewModel(HttpClient httpClient, HtmlParser htmlParser) : ViewModelBase
 {
+    private IEnumerable<string> _operatorList = [];
+    private IEnumerable<Material> _materialList = [];
+
     [RelayCommand]
-    private async Task<IEnumerable<string>> GetOperatorListAsync()
+    private async Task GetResourceInfoAsync()
+    {
+        await Task.WhenAll([GetOperatorListAsync(), GetMaterialListAsync()]);
+        await File.WriteAllTextAsync("ResourceInfo.json", JsonSerializer.Serialize(new ResourceInfo()
+        {
+            OperatorList = _operatorList.ToArray(),
+            MaterialList = _materialList.ToArray()
+        }, App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
+    }
+    
+    private async Task GetOperatorListAsync()
     {
         var resp = await httpClient.GetAsync("https://prts.wiki/w/%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88");
         resp.EnsureSuccessStatusCode();
         var document = htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var operatorData = document.QuerySelector("div#filter-data")?.Children;
-        return operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
+        _operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
                    .Select(n => n!) ?? [];
     }
-
-    [RelayCommand]
-    private async Task<IEnumerable<Material>> GetMaterialListAsync()
+    
+    private async Task GetMaterialListAsync()
     {
         var resp = await httpClient.GetAsync("https://prts.wiki/w/%E9%81%93%E5%85%B7%E4%B8%80%E8%A7%88");
         resp.EnsureSuccessStatusCode();
@@ -41,9 +57,9 @@ public partial class MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
                 Name = e.Attributes["data-name"]?.Value ?? string.Empty,
                 Rarity = int.Parse(e.Attributes["data-rarity"]?.Value ?? string.Empty),
             }).ToArray();
-        if (materialData is null) return [];
+        if (materialData is null) return;
         await Task.WhenAll(materialData.Where(m => m.Rarity > 2).Select(GetCompositionAsync));
-        return materialData;
+        _materialList = materialData;
     }
 
     private async Task GetCompositionAsync(Material material)
