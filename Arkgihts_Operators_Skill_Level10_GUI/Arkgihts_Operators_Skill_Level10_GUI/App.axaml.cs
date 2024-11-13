@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using AngleSharp.Html.Parser;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -29,13 +30,15 @@ public partial class App : Application
     {
         var serviceCollention = new ServiceCollection()
             .AddSingleton<HttpClient>()
+            .AddSingleton<HtmlParser>()
             .AddSingleton<JsonSerializerOptions>(_ => new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
                 WriteIndented = true,
                 IndentSize = 4,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-            });
+            })
+            .AddSingleton<MainViewModel>();
         return serviceCollention.BuildServiceProvider();
     }
     
@@ -53,14 +56,14 @@ public partial class App : Application
             BindingPlugins.DataValidators.RemoveAt(0);
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = ServiceProvider.GetRequiredService<MainViewModel>()
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = new MainViewModel()
+                DataContext = ServiceProvider.GetRequiredService<MainViewModel>()
             };
         }
 
