@@ -32,6 +32,12 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private int _selectedSkillIndex;
     
+    [ObservableProperty]
+    private ObservableCollection<KeyValuePair<string, int>> _needComposition = [];
+    
+    [ObservableProperty]
+    private ObservableCollection<KeyValuePair<string, int>> _lackRarity2 = [];
+    
     public MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
         _httpClient = httpClient;
@@ -108,10 +114,20 @@ public partial class MainViewModel : ViewModelBase
             .Where(d => _materialList[d.Key].Rarity > 2 && d.Value.Have < 0)
             .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have))
             .OrderBy(d => _materialList[d.Key].Rarity);
+        NeedComposition.Clear();
+        foreach (var item in needComposition)
+        {
+            NeedComposition.Add(item);
+        }
 
         var lackRarity2 = depotDic
             .Where(d => _materialList[d.Key].Rarity == 2 && d.Value.Have < 0)
             .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have));
+        LackRarity2.Clear();
+        foreach (var item in lackRarity2)
+        {
+            LackRarity2.Add(item);
+        }
     }
     
     private async Task<KeyValuePair<string, int>[,,]> GetOperatorSkillInfoAsync()

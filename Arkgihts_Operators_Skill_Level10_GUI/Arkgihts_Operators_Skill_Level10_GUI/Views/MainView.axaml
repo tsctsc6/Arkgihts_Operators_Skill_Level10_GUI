@@ -27,7 +27,24 @@
                     Margin="0, 0, 10, 0"/>
         </Grid>
         <Grid Grid.Row="2" ColumnDefinitions="*, *" Margin="10, 10, 0, 0">
-            
+            <DataGrid Grid.Column="0" ItemsSource="{Binding NeedComposition}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False"
+                      GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                      Margin="0, 0, 10, 0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="需要合成的材料名称"  Binding="{Binding Key}"/>
+                    <DataGridTextColumn Header="数量" Binding="{Binding Value}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid Grid.Column="1" ItemsSource="{Binding LackRarity2}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False"
+                      GridLinesVisibility="All" BorderThickness="1" BorderBrush="Gray"
+                      Margin="0, 0, 10, 0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="总计欠缺的2级材料名称"  Binding="{Binding Key}"/>
+                    <DataGridTextColumn Header="数量" Binding="{Binding Value}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </UserControl>

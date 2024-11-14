@@ -3,6 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="Arkgihts_Operators_Skill_Level10_GUI/Arkgihts_Operators_Skill_Level10_GUI/App.axaml" value="Arkgihts_Operators_Skill_Level10_GUI/Arkgihts_Operators_Skill_Level10_GUI.Desktop/Arkgihts_Operators_Skill_Level10_GUI.Desktop.csproj" />
         <entry key="Arkgihts_Operators_Skill_Level10_GUI/Arkgihts_Operators_Skill_Level10_GUI/Views/MainView.axaml" value="Arkgihts_Operators_Skill_Level10_GUI/Arkgihts_Operators_Skill_Level10_GUI.Desktop/Arkgihts_Operators_Skill_Level10_GUI.Desktop.csproj" />
         <entry key="Arkgihts_Operators_Skill_Level10_GUI/Arkgihts_Operators_Skill_Level10_GUI/Views/MainWindow.axaml" value="Arkgihts_Operators_Skill_Level10_GUI/Arkgihts_Operators_Skill_Level10_GUI.Browser/Arkgihts_Operators_Skill_Level10_GUI.Browser.csproj" />
       </map>
