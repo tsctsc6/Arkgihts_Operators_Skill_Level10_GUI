@@ -71,10 +71,47 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task CalculateSkillMaterialAsync()
     {
-        var skillInfo = await GetOperatorSkillInfoAsync();
         var depot = JsonSerializer.Deserialize<Depot>(await File.ReadAllTextAsync(App.DepotPath),
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
+        if (depot == null) return;
+        var skillInfo = await GetOperatorSkillInfoAsync();
+        var depotDic = depot.Items.Where(m => _materialList.ContainsKey(m.Name))
+            .ToDictionary(m => m.Name);
+        foreach (var item in _materialList)
+        {
+            depotDic.TryAdd(item.Key, new()
+            {
+                Name = item.Key,
+                Have = 0
+            });
+        }
+        for (var i = 0; i < 3; i++)
+        {
+            for (var j = 0; j < 2; j++)
+            {
+                depotDic[skillInfo[SelectedSkillIndex, i, j].Key].Have -= skillInfo[SelectedSkillIndex, i, j].Value;
+            }
+        }
+
+        var lackDirectly = depotDic.Where(d => d.Value.Have < 0)
+            .OrderByDescending(d => _materialList[d.Key].Rarity);
+        foreach (var item in lackDirectly)
+        {
+            foreach (var item2 in _materialList[item.Key].Composition)
+            {
+                // 已知 item.Value.Have < 0
+                depotDic[item2.Key].Have += item2.Value * item.Value.Have;
+            }
+        }
         
+        var needComposition = depotDic
+            .Where(d => _materialList[d.Key].Rarity > 2 && d.Value.Have < 0)
+            .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have))
+            .OrderBy(d => _materialList[d.Key].Rarity);
+
+        var lackRarity2 = depotDic
+            .Where(d => _materialList[d.Key].Rarity == 2 && d.Value.Have < 0)
+            .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have));
     }
     
     private async Task<KeyValuePair<string, int>[,,]> GetOperatorSkillInfoAsync()
