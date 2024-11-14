@@ -61,15 +61,32 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task GetOperatorSkillInfoAsync()
+    private async Task<KeyValuePair<string, int>[,,]> GetOperatorSkillInfoAsync()
     {
+        var skillInfo = new KeyValuePair<string, int>[3, 3, 2];
         var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{SelectedOperator}");
         resp.EnsureSuccessStatusCode();
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var table = document.QuerySelector("span#技能升级材料")?.ParentElement?
             .NextElementSibling?.NextElementSibling?
             .QuerySelector("tbody")?.Children.Skip(9);
-        
+        if (table == null) return skillInfo;
+        foreach (var (i, tr) in table.Index())
+        {
+            var d = Math.DivRem(i, 4, out var r);
+            if (r == 0) continue;
+            var td = tr.QuerySelector("td");
+            if (td == null) continue;
+            foreach (var (j, div) in td.Children.Index())
+            {
+                if (j == 0) continue;
+                var name = div.QuerySelector("a")?.Attributes["title"]?.Value;
+                if (string.IsNullOrEmpty(name)) continue;
+                if (!int.TryParse(div.QuerySelector("span")?.TextContent, out var count)) continue;
+                skillInfo[d, r - 1, j - 1] = new KeyValuePair<string, int>(name, count);
+            }
+        }
+        return skillInfo;
     }
     
     [RelayCommand]
