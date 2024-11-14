@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using Arkgihts_Operators_Skill_Level10_GUI.Models;
+using Arkgihts_Operators_Skill_Level10_GUI.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +52,26 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task LoadDepotFromClipboardAsync()
+    {
+        var clipboard = App.Current.ServiceProvider.GetRequiredService<MainWindow>().Clipboard;
+        if (clipboard == null) return;
+        var content = await clipboard.GetTextAsync();
+        if (string.IsNullOrEmpty(content)) return;
+        var depot = JsonSerializer.Deserialize<Depot>(content,
+            App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
+        if (depot == null) return;
+        await File.WriteAllTextAsync("depot.json", JsonSerializer.Serialize(depot,
+            App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
+    }
+    
+    [RelayCommand]
+    private async Task CalculateSkillMaterialAsync()
+    {
+        var skillInfo = await GetOperatorSkillInfoAsync();
+        
+    }
+    
     private async Task<KeyValuePair<string, int>[,,]> GetOperatorSkillInfoAsync()
     {
         var skillInfo = new KeyValuePair<string, int>[3, 3, 2];

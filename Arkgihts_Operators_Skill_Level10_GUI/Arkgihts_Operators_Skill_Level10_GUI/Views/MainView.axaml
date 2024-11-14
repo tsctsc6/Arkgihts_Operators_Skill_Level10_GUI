@@ -9,7 +9,7 @@
     <Grid RowDefinitions="Auto, Auto, *">
         <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, *">
             <Button Grid.Column="0" Content="更新干员和材料信息" Command="{Binding GetResourceInfoCommand}"/>
-            <Button Grid.Column="1" Content="把剪贴板的内容粘贴到仓库文件中"/>
+            <Button Grid.Column="1" Content="把剪贴板的内容粘贴到仓库文件中" Command="{Binding LoadDepotFromClipboardCommand}"/>
         </Grid>
         <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *">
             <AutoCompleteBox Grid.Column="0" ItemsSource="{Binding OperatorList}"

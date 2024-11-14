@@ -10,7 +10,6 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 using Arkgihts_Operators_Skill_Level10_GUI.Views;
-using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arkgihts_Operators_Skill_Level10_GUI;
