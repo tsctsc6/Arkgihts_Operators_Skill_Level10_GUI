@@ -275,7 +275,7 @@ public partial class MainViewModel : ViewModelBase
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var composition = document.QuerySelector("span#加工站")?.ParentElement?.NextElementSibling?
             .QuerySelector("tbody > tr:nth-child(2) > td > div")?.Children;
-        if (composition is null) return Result.Err("无法定位道具合成信息");
+        if (composition is null) return Result.Err($"{uri}, 无法定位道具合成信息");
         material.Composition = [];
         var pairs = new List<KeyValuePair<string, int>>(3);
         foreach (var compositionItem in composition)
