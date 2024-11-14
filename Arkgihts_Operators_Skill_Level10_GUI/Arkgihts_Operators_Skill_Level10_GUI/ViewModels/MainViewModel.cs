@@ -72,7 +72,7 @@ public partial class MainViewModel : ViewModelBase
         await File.WriteAllTextAsync(App.DepotPath, JsonSerializer.Serialize(depot,
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
         var messageBox = MessageBoxManager.GetMessageBoxStandard("Info", "Success");
-        await messageBox.ShowAsync();
+        await messageBox.ShowWindowDialogAsync(App.Current.ServiceProvider.GetRequiredService<MainWindow>());
     }
     
     [RelayCommand]
@@ -83,7 +83,7 @@ public partial class MainViewModel : ViewModelBase
         if (depot == null)
         {
             var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "仓库文件格式错误");
-            await messageBox.ShowAsync();
+            await messageBox.ShowWindowDialogAsync(App.Current.ServiceProvider.GetRequiredService<MainWindow>());
             return;
         }
         var skillInfoResult = await GetOperatorSkillInfoAsync();
@@ -95,7 +95,7 @@ public partial class MainViewModel : ViewModelBase
                 break;
             case ErrResult<KeyValuePair<string, int>[,,], string> errResult:
                 var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value);
-                await messageBox.ShowAsync();
+                await messageBox.ShowWindowDialogAsync(App.Current.ServiceProvider.GetRequiredService<MainWindow>());
                 return;
             default: return;
         }
@@ -197,7 +197,7 @@ public partial class MainViewModel : ViewModelBase
                 break;
             case ErrResult<IEnumerable<string>, string> errResult:
                 var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value);
-                await messageBox.ShowAsync();
+                await messageBox.ShowWindowDialogAsync(App.Current.ServiceProvider.GetRequiredService<MainWindow>());
                 break;
             default: return;
         }
@@ -210,7 +210,7 @@ public partial class MainViewModel : ViewModelBase
                 break;
             case ErrResult<FrozenDictionary<string, Material>, string> errResult:
                 var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value);
-                await messageBox.ShowAsync();
+                await messageBox.ShowWindowDialogAsync(App.Current.ServiceProvider.GetRequiredService<MainWindow>());
                 break;
             default: return;
         }
