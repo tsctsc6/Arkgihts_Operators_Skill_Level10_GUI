@@ -24,7 +24,7 @@ public partial class MainViewModel : ViewModelBase
     private readonly HtmlParser _htmlParser;
 
     [ObservableProperty]
-    private ObservableCollection<string> _operatorList;
+    private ObservableCollection<string> _operatorList = [];
     
     [ObservableProperty]
     private string _selectedOperator = string.Empty;
@@ -36,25 +36,16 @@ public partial class MainViewModel : ViewModelBase
         LoadResourceInfo();
     }
     
-    [MemberNotNull(nameof(_operatorList), nameof(OperatorList), nameof(_materialList))]
+    [MemberNotNull(nameof(_materialList))]
     private void LoadResourceInfo()
     {
-        OperatorList = new();
-        if (!File.Exists(App.ResourceInfoPath))
-        {
-            OperatorList = [];
-            _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
-            return;
-        }
-
+        OperatorList = [];
+        _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
+        
+        if (!File.Exists(App.ResourceInfoPath)) return;
         var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText("ResourceInfo.json"),
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
-        if (resourceInfo == null)
-        {
-            OperatorList = [];
-            _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
-            return;
-        }
+        if (resourceInfo == null) return;
 
         Array.ForEach(resourceInfo.OperatorList, s => OperatorList.Add(s));
         _materialList = resourceInfo.MaterialList.ToFrozenDictionary(m => m.Name);
