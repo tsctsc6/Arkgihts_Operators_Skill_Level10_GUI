@@ -8,14 +8,23 @@
              x:DataType="vm:MainViewModel">
     <Grid RowDefinitions="Auto, Auto, Auto, *">
         <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, *" Margin="10, 10, 0, 0">
-            <Button Grid.Column="0" Content="更新干员和材料信息" Command="{Binding GetResourceInfoCommand}"/>
-            <Button Grid.Column="1" Content="把剪贴板的内容粘贴到仓库文件中" Command="{Binding LoadDepotFromClipboardCommand}"/>
+            <Button Grid.Column="0" Content="更新干员和材料信息" Command="{Binding GetResourceInfoCommand}"
+                    Margin="0, 0, 10, 0"/>
+            <Button Grid.Column="1" Content="把剪贴板的内容粘贴到仓库文件中" Command="{Binding LoadDepotFromClipboardCommand}"
+                    Margin="0, 0, 10, 0"/>
         </Grid>
-        <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *" Margin="10, 10, 0, 0">
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, Auto, *" Margin="10, 10, 0, 0">
             <AutoCompleteBox Grid.Column="0" ItemsSource="{Binding OperatorList}"
                              FilterMode="Contains" SelectedItem="{Binding SelectedOperator}"
-                             Width="200"/>
-            <Button Grid.Column="1" Content="计算" Command="{Binding CalculateSkillMaterialCommand}"/>
+                             Width="200" Margin="0, 0, 10, 0"/>
+            <ComboBox Grid.Column="1" SelectedIndex="{Binding SelectedSkillIndex}"
+                      Width="100" Margin="0, 0, 10, 0">
+                <ComboBoxItem>第1技能</ComboBoxItem>
+                <ComboBoxItem>第2技能</ComboBoxItem>
+                <ComboBoxItem>第3技能</ComboBoxItem>
+            </ComboBox>
+            <Button Grid.Column="2" Content="计算" Command="{Binding CalculateSkillMaterialCommand}"
+                    Margin="0, 0, 10, 0"/>
         </Grid>
         <Grid Grid.Row="2" ColumnDefinitions="*, *" Margin="10, 10, 0, 0">
             

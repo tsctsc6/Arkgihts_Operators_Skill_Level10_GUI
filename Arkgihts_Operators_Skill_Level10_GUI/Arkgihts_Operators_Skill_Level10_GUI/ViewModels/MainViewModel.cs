@@ -29,6 +29,9 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string _selectedOperator = string.Empty;
     
+    [ObservableProperty]
+    private int _selectedSkillIndex = 0;
+    
     public MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
         _httpClient = httpClient;
@@ -61,7 +64,7 @@ public partial class MainViewModel : ViewModelBase
         var depot = JsonSerializer.Deserialize<Depot>(content,
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
         if (depot == null) return;
-        await File.WriteAllTextAsync("depot.json", JsonSerializer.Serialize(depot,
+        await File.WriteAllTextAsync(App.DepotPath, JsonSerializer.Serialize(depot,
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
     }
     
@@ -69,6 +72,8 @@ public partial class MainViewModel : ViewModelBase
     private async Task CalculateSkillMaterialAsync()
     {
         var skillInfo = await GetOperatorSkillInfoAsync();
+        var depot = JsonSerializer.Deserialize<Depot>(await File.ReadAllTextAsync(App.DepotPath),
+            App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
         
     }
     
