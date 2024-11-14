@@ -18,7 +18,8 @@ public partial class App : Application
 {
     public new static App Current => (Application.Current as App)!;
 
-    public const string ResourceInfoPath = "ResourceInfo.json";
+    public const string ResourceInfoPath = "resource_info.json";
+    public const string DepotPath = "depot.json";
 
     public IServiceProvider ServiceProvider { get; }
     
