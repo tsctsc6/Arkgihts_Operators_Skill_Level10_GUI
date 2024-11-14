@@ -18,7 +18,6 @@ namespace Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-    //private IEnumerable<string> _operatorList;
     private FrozenDictionary<string, Material> _materialList;
     private readonly HttpClient _httpClient;
     private readonly HtmlParser _htmlParser;
