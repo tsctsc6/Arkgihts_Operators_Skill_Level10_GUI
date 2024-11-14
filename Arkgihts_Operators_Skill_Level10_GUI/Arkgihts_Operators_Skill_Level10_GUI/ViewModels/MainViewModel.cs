@@ -30,7 +30,7 @@ public partial class MainViewModel : ViewModelBase
     private string _selectedOperator = string.Empty;
     
     [ObservableProperty]
-    private int _selectedSkillIndex = 0;
+    private int _selectedSkillIndex;
     
     public MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
