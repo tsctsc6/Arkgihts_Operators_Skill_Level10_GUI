@@ -6,10 +6,16 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Arkgihts_Operators_Skill_Level10_GUI.Views.MainView"
              x:DataType="vm:MainViewModel">
-    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, Auto, *">
-        <AutoCompleteBox ItemsSource="{Binding OperatorList}"
-                         FilterMode="Contains" SelectedItem="{Binding SelectedOperator}"
-                         Width="200"/>
-        <Button Grid.Row="0" Grid.Column="1" Content="Test" Command="{Binding GetOperatorSkillInfoCommand}"/>
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, *">
+            <Button Grid.Column="0" Content="更新干员和材料信息" Command="{Binding GetResourceInfoCommand}"/>
+            <Button Grid.Column="1" Content="把剪贴板的内容粘贴到仓库文件中"/>
+        </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *">
+            <AutoCompleteBox Grid.Column="0" ItemsSource="{Binding OperatorList}"
+                             FilterMode="Contains" SelectedItem="{Binding SelectedOperator}"
+                             Width="200"/>
+            <Button Grid.Column="1" Content="计算" Command="{Binding CalculateSkillMaterialCommand}"/>
+        </Grid>
     </Grid>
 </UserControl>
