@@ -14,6 +14,8 @@ using Arkgihts_Operators_Skill_Level10_GUI.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using MsBox.Avalonia;
+using RustSharp;
 
 namespace Arkgihts_Operators_Skill_Level10_GUI.ViewModels;
 
@@ -69,6 +71,8 @@ public partial class MainViewModel : ViewModelBase
         if (depot == null) return;
         await File.WriteAllTextAsync(App.DepotPath, JsonSerializer.Serialize(depot,
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
+        var messageBox = MessageBoxManager.GetMessageBoxStandard("Info", "Success");
+        await messageBox.ShowAsync();
     }
     
     [RelayCommand]
@@ -76,8 +80,26 @@ public partial class MainViewModel : ViewModelBase
     {
         var depot = JsonSerializer.Deserialize<Depot>(await File.ReadAllTextAsync(App.DepotPath),
             App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>());
-        if (depot == null) return;
-        var skillInfo = await GetOperatorSkillInfoAsync();
+        if (depot == null)
+        {
+            var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", "仓库文件格式错误");
+            await messageBox.ShowAsync();
+            return;
+        }
+        var skillInfoResult = await GetOperatorSkillInfoAsync();
+        KeyValuePair<string, int>[,,] skillInfo;
+        switch (skillInfoResult)
+        {
+            case OkResult<KeyValuePair<string, int>[,,], string> okResult:
+                skillInfo = okResult.Value;
+                break;
+            case ErrResult<KeyValuePair<string, int>[,,], string> errResult:
+                var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value);
+                await messageBox.ShowAsync();
+                return;
+            default: return;
+        }
+        if (skillInfoResult.IsErr) return;
         var depotDic = depot.Items.Where(m => _materialList.ContainsKey(m.Name))
             .ToDictionary(m => m.Name);
         foreach (var item in _materialList)
@@ -127,16 +149,17 @@ public partial class MainViewModel : ViewModelBase
         }
     }
     
-    private async Task<KeyValuePair<string, int>[,,]> GetOperatorSkillInfoAsync()
+    private async Task<Result<KeyValuePair<string, int>[,,], string>> GetOperatorSkillInfoAsync()
     {
-        var skillInfo = new KeyValuePair<string, int>[3, 3, 2];
-        var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{SelectedOperator}");
-        resp.EnsureSuccessStatusCode();
+        var uri = $"https://prts.wiki/w/{SelectedOperator}";
+        var resp = await _httpClient.GetAsync(uri);
+        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var table = document.QuerySelector("span#技能升级材料")?.ParentElement?
             .NextElementSibling?.NextElementSibling?
             .QuerySelector("tbody")?.Children.Skip(9);
-        if (table == null) return skillInfo;
+        if (table == null) return Result.Err("无法定位技能升级材料");
+        var skillInfo = new KeyValuePair<string, int>[3, 3, 2];
         foreach (var (i, tr) in table.Index())
         {
             var d = Math.DivRem(i, 4, out var r);
@@ -152,39 +175,72 @@ public partial class MainViewModel : ViewModelBase
                 skillInfo[d, r - 1, j - 1] = new KeyValuePair<string, int>(name, count);
             }
         }
-        return skillInfo;
+        return Result.Ok(skillInfo);
     }
     
     [RelayCommand]
     private async Task GetResourceInfoAsync()
     {
-        await Task.WhenAll([GetOperatorListAsync(), GetMaterialListAsync()]);
-        await File.WriteAllTextAsync("ResourceInfo.json", JsonSerializer.Serialize(new ResourceInfo()
+        var getOperatorListTask = GetOperatorListAsync();
+        var getMaterialListTask = GetMaterialListAsync();
+        await Task.WhenAll(getOperatorListTask, getMaterialListTask);
+        
+        var getOperatorListTaskResult = await getOperatorListTask;
+        switch (getOperatorListTaskResult)
+        {
+            case OkResult<IEnumerable<string>, string> okResult:
+                OperatorList.Clear();
+                foreach (var s in okResult.Value)
+                {
+                    OperatorList.Add(s);
+                }
+                break;
+            case ErrResult<IEnumerable<string>, string> errResult:
+                var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value);
+                await messageBox.ShowAsync();
+                break;
+            default: return;
+        }
+        
+        var getMaterialListTaskResult = await getMaterialListTask;
+        switch (getMaterialListTaskResult)
+        {
+            case OkResult<FrozenDictionary<string, Material>, string> okResult:
+                _materialList = okResult.Value;
+                break;
+            case ErrResult<FrozenDictionary<string, Material>, string> errResult:
+                var messageBox = MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value);
+                await messageBox.ShowAsync();
+                break;
+            default: return;
+        }
+        
+        if (getOperatorListTaskResult.IsErr || getMaterialListTaskResult.IsErr) return;
+        
+        await File.WriteAllTextAsync(App.ResourceInfoPath, JsonSerializer.Serialize(new ResourceInfo()
         {
             OperatorList = OperatorList.ToArray(),
             MaterialList = _materialList.Select(kv => kv.Value).ToArray(),
         }, App.Current.ServiceProvider.GetRequiredService<JsonSerializerOptions>()));
     }
     
-    private async Task GetOperatorListAsync()
+    private async Task<Result<IEnumerable<string>, string>> GetOperatorListAsync()
     {
-        var resp = await _httpClient.GetAsync("https://prts.wiki/w/%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88");
-        resp.EnsureSuccessStatusCode();
+        const string uri = "https://prts.wiki/w/干员一览";
+        var resp = await _httpClient.GetAsync(uri);
+        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var operatorData = document.QuerySelector("div#filter-data")?.Children;
         var operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
                    .Select(n => n!) ?? [];
-        OperatorList.Clear();
-        foreach (var s in operatorList)
-        {
-            OperatorList.Add(s);
-        }
+        return Result.Ok(operatorList);
     }
     
-    private async Task GetMaterialListAsync()
+    private async Task<Result<FrozenDictionary<string, Material>, string>> GetMaterialListAsync()
     {
-        var resp = await _httpClient.GetAsync("https://prts.wiki/w/%E9%81%93%E5%85%B7%E4%B8%80%E8%A7%88");
-        resp.EnsureSuccessStatusCode();
+        const string uri = "https://prts.wiki/w/道具一览";
+        var resp = await _httpClient.GetAsync(uri);
+        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var materialData = document.QuerySelector("div.mw-parser-output")?.Children
             .Where(e =>
@@ -200,19 +256,26 @@ public partial class MainViewModel : ViewModelBase
                 Name = e.Attributes["data-name"]?.Value ?? string.Empty,
                 Rarity = int.Parse(e.Attributes["data-rarity"]?.Value ?? string.Empty),
             }).ToArray();
-        if (materialData is null) return;
-        await Task.WhenAll(materialData.Where(m => m.Rarity > 2).Select(GetCompositionAsync));
-        _materialList = materialData.ToFrozenDictionary(m => m.Name);
+        if (materialData is null) return Result.Err("无法定位道具信息");
+        var compositionResults = await Task.WhenAll(materialData.Where(m => m.Rarity > 2).Select(GetCompositionAsync));
+        if (compositionResults.Any(c => c.IsErr))
+        {
+            var errorMessages = compositionResults.Where(c => c.IsErr)
+                .Select(c => (c as ErrResult<string, string>)!.Value).ToArray();
+            return Result.Err($"获取材料合成表时发生问题:{Environment.NewLine}{string.Join(Environment.NewLine, errorMessages)}");
+        }
+        return Result.Ok(materialData.ToFrozenDictionary(m => m.Name));
     }
 
-    private async Task GetCompositionAsync(Material material)
+    private async Task<Result<string, string>> GetCompositionAsync(Material material)
     {
-        var resp = await _httpClient.GetAsync($"https://prts.wiki/w/{material.Name}");
-        resp.EnsureSuccessStatusCode();
+        var uri = $"https://prts.wiki/w/{material.Name}";
+        var resp = await _httpClient.GetAsync(uri);
+        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var composition = document.QuerySelector("span#加工站")?.ParentElement?.NextElementSibling?
             .QuerySelector("tbody > tr:nth-child(2) > td > div")?.Children;
-        if (composition is null) return;
+        if (composition is null) return Result.Err("无法定位道具合成信息");
         material.Composition = [];
         var pairs = new List<KeyValuePair<string, int>>(3);
         foreach (var compositionItem in composition)
@@ -223,5 +286,6 @@ public partial class MainViewModel : ViewModelBase
             ));
         }
         material.Composition = pairs.ToArray();
+        return Result.Ok(material.Name);
     }
 }
