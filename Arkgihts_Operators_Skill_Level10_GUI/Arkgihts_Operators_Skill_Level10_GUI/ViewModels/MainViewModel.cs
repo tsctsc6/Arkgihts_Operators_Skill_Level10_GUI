@@ -23,8 +23,7 @@ public partial class MainViewModel : ViewModelBase
     private readonly HttpClient _httpClient;
     private readonly HtmlParser _htmlParser;
 
-    [ObservableProperty]
-    private ObservableCollection<string> _operatorList = [];
+    public ObservableCollection<string> OperatorList { get; } = [];
     
     [ObservableProperty]
     private string _selectedOperator = string.Empty;
@@ -32,11 +31,9 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private int _selectedSkillIndex;
     
-    [ObservableProperty]
-    private ObservableCollection<KeyValuePair<string, int>> _needComposition = [];
+    public ObservableCollection<KeyValuePair<string, int>> NeedComposition { get; } = [];
     
-    [ObservableProperty]
-    private ObservableCollection<KeyValuePair<string, int>> _lackRarity2 = [];
+    public ObservableCollection<KeyValuePair<string, int>> LackRarity2 { get; }= [];
     
     public MainViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
@@ -48,7 +45,7 @@ public partial class MainViewModel : ViewModelBase
     [MemberNotNull(nameof(_materialList))]
     private void LoadResourceInfo()
     {
-        OperatorList = [];
+        OperatorList.Clear();
         _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
         
         if (!File.Exists(App.ResourceInfoPath)) return;
